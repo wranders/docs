@@ -2,6 +2,8 @@
 
 ***This is outdated. An update is being worked on.***
 
+*As of: January 14, 2020*
+
 ## Introduction
 
 This guide is written using the following versions:
