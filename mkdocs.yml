@@ -2,6 +2,7 @@ site_name: Memory &omega;
 site_url: https://www.doubleu.codes/docs/
 site_description: Documentation
 site_author: W Anders
+repo_name: wranders/docs
 repo_url: https://github.com/wranders/docs/
 edit_uri: edit/src/docs
 copyright: 'Copyright &copy; 2018-2021 W Anders'
@@ -11,43 +12,66 @@ theme:
   name: material
   language: en
   palette:
+  - scheme: default
+    media: "(prefers-color-scheme: light)"
     primary: 'green'
-    accent: 'red'
+    toggle:
+      icon: material/toggle-switch-off-outline
+      name: Switch to dark mode
+  - scheme: slate
+    media: "(prefers-color-scheme: dark)"
+    primary: 'green'
+    toggle:
+      icon: material/toggle-switch
+      name: Switch to light mode
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
   logo: 'img/logo.png'
   favicon: 'img/favicon.ico'
-  feature:
-    tabs: true
+  features:
+  - header.autohide
+  - navigation.instant
+  - navigation.tabs
+  - navigation.top
+  - search.highlight
+  - search.suggest
+  - toc.integrate
+
+plugins:
+- git-revision-date-localized
+- search
 
 markdown_extensions:
-  - admonition
-  - codehilite:
-      guess_lang: false
-      use_pygments: true
-      noclasses: true
-  - pymdownx.superfences
-  - pymdownx.details
-  - toc:
-      permalink: true
+- admonition
+- pymdownx.highlight
+- pymdownx.inlinehilite
+- pymdownx.superfences
+- pymdownx.details
+- pymdownx.tabbed
+- pymdownx.caret
+- pymdownx.mark
+- pymdownx.tilde
+- pymdownx.smartsymbols
+- toc:
+    permalink: true
 
 nav:
-  - Welcome: 'README.md'
-  - Knowledge Base:
-    - 'kb/README.md'
-    - IETF RFC:
-      - LDAP: 'rfc/ldap/README.md'
-    - Servers:
-      - Dell R510: 'kb/servers/dell-r510/README.md'
-      - Dell R610: 'kb/servers/dell-r610/README.md'
-    - Interface Bit Rates: 'kb/interface-bit-rates/README.md'
-  - Guides:
-    - 'guides/README.md'
-    - Services:
-      - 'guides/services/README.md'
-      - Xen-Orchestra: 'guides/services/xen-orchestra/README.md'
-    - XCP-ng:
-      - 'guides/xcp-ng/README.md'
-      - ZFS Local Storage: 'guides/xcp-ng/zfs-local-storage/README.md'
-    - Self-Signed Certificate with Root: 'guides/self-signed-certificate-with-root/README.md'
+- Welcome: 'README.md'
+- Knowledge Base:
+  - 'kb/README.md'
+  - IETF RFC:
+    - LDAP: 'rfc/ldap/README.md'
+  - Servers:
+    - Dell R510: 'kb/servers/dell-r510/README.md'
+    - Dell R610: 'kb/servers/dell-r610/README.md'
+  - Interface Bit Rates: 'kb/interface-bit-rates/README.md'
+- Guides:
+  - 'guides/README.md'
+  - Services:
+    - 'guides/services/README.md'
+    - Xen-Orchestra: 'guides/services/xen-orchestra/README.md'
+  - XCP-ng:
+    - 'guides/xcp-ng/README.md'
+    - ZFS Local Storage: 'guides/xcp-ng/zfs-local-storage/README.md'
+  - Self-Signed Certificate with Root: 'guides/self-signed-certificate-with-root/README.md'

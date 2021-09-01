@@ -1,5 +1,9 @@
 # Xen-Orchestra
 
+***This is outdated. An update is being worked on.***
+
+## Introduction
+
 This guide is written using the following versions:
 
 * [CentOS](https://www.centos.org/) 8.0.1905 (Core)
@@ -9,16 +13,24 @@ This guide is written using the following versions:
 * [Nginx](https://www.nginx.com/) 1.14.1
 * [Redis](https://redis.io/) 5.0.3
 
-Certain considerations with configuration have been taken to satisfy my environment and requirements. Most notably:
+Certain considerations with configuration have been taken to satisfy my
+environment and requirements. Most notably:
 
-1. [XCP-ng](https://xcp-ng.org/) servers use certificates from my internal certificate authority (CA), so for Node.js to use the system's roots or provided roots without allowing "Unauthorized Certificates", it must run in an unprivileged state.
+1. [XCP-ng](https://xcp-ng.org/) servers use certificates from my internal
+certificate authority (CA), so for Node.js to use the system's roots or provided
+roots without allowing "Unauthorized Certificates", it must run in an
+unprivileged state.
     * Non-root user
     * Non-system user
-    * No Linux Capablities (ie. `cap_net_bind_service`), so no binding to ports <1024
-2. Nginx will terminate SSL and proxy traffic to Xen-Orchestra to satisfy the non-root requirement
+    * No Linux Capablities (ie. `cap_net_bind_service`), so no binding to ports
+    <1024
+2. Nginx will terminate SSL and proxy traffic to Xen-Orchestra to satisfy the
+non-root requirement
 3. Nginx will automatically redirect HTTP traffic to HTTPS
-4. NFS remotes are used for backup services, so the Xen-Orchestra user is granted `NOPASSWD` access in `sudoers` to the `mount` and `umount` commands.
-    * A [systemd](https://freedesktop.org/wiki/Software/systemd/) drop-in is used to define a RuntimeDirectory where Xen-Orchestra mounts NFS remotes
+4. NFS remotes are used for backup services, so the Xen-Orchestra user is
+granted `NOPASSWD` access in `sudoers` to the `mount` and `umount` commands.
+    * A [systemd](https://freedesktop.org/wiki/Software/systemd/) drop-in is
+    used to define a RuntimeDirectory where Xen-Orchestra mounts NFS remotes
 
 ---
 
@@ -27,7 +39,8 @@ Certain considerations with configuration have been taken to satisfy my environm
 The only third-party repository that is required is Yarn's.
 
 ```sh
-curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | sudo tee /etc/yum.repos.d/yarn.repo
+curl -sL https://dl.yarnpkg.com/rpm/yarn.repo \
+    | sudo tee /etc/yum.repos.d/yarn.repo
 ```
 
 ## Dependencies
@@ -41,11 +54,23 @@ sudo dnf update -y
 Install dependencies. `G++` is required to compile some parts of Xen-Orchestra.
 
 ```sh
-sudo dnf install -y nodejs yarn nginx redis git gcc-c++ nfs-utils
+sudo dnf install -y \
+    gcc-c++ \
+    git \
+    nfs-utils \
+    nginx \
+    nodejs \
+    redis \
+    yarn
 ```
 
 !!! Info
-    The official ["From the Sources"](https://xen-orchestra.com/docs/from_the_sources.html) documentation says to use Node.js 8, but the System `AppStream` repository contains v10. I've encountered no issues with the newer version. Besides, v8 is [EOL as of 1 January 2020](https://nodejs.org/en/about/releases/) and no longer recieving any updates.
+    The official
+    ["From the Sources"](https://xen-orchestra.com/docs/from_the_sources.html)
+    documentation says to use Node.js 8, but the System `AppStream` repository
+    contains v10. I've encountered no issues with the newer version. Besides, v8
+    is [EOL as of 1 January 2020](https://nodejs.org/en/about/releases/) and no
+    longer recieving any updates.
 
 ## Redis
 
@@ -69,18 +94,20 @@ Create the application user:
 
 ```sh
 sudo adduser -m -U \
--c "Xen-Orchestra User" \
--s /sbin/nologin xo
+    -c "Xen-Orchestra User" \
+    -s /sbin/nologin xo
 ```
 
 !!! Error "Critical"
     Do **NOT** run Xen-Orchestra as the `root` user.
 
 !!! Info
-    The `-m` flag creates a home directory (`/home/xo`) so `yarn` can create its cache.
+    The `-m` flag creates a home directory (`/home/xo`) so `yarn` can create its
+    cache.
 
 !!! Info
-    Creating the `xo` user as a system user (`-r` flag) will prevent the use of system or provided root certificates.
+    Creating the `xo` user as a system user (`-r` flag) will prevent the use of
+    system or provided root certificates.
 
 Clone the Xen-Orchestra repository master branch to `/opt/`:
 
@@ -95,7 +122,8 @@ sudo chown -R xo:xo /opt/xen-orchestra
 ```
 
 !!! Info
-    `yarn` commands are run with the `--cwd` flag and directory location so that they can be run from any directory.
+    `yarn` commands are run with the `--cwd` flag and directory location so that
+    they can be run from any directory.
 
 Gather Yarn dependencies and build the application. This will take a while:
 
@@ -118,48 +146,49 @@ sudo chown xo:xo /var/lib/xo-server
 
 ### Configuration
 
-Create `/etc/xo-server/config.toml`:
+=== "/etc/xo-server/config.toml"
+    ```toml
+    [http]
 
-```sh
-[http]
+    [[http.listen]]
+    hostname = '127.0.0.1'
+    port = 8080
 
-[[http.listen]]
-hostname = '127.0.0.1'
-port = 8080
+    [http.mounts]
 
-[http.mounts]
+    [http.proxies]
 
-[http.proxies]
+    [redis]
 
-[redis]
-
-[remoteOptions]
-useSudo = true
-```
+    [remoteOptions]
+    useSudo = true
+    ```
 
 ### systemd and sudoers
 
 Create the systemd unit file:
 
-```sh
-echo "[Unit]
-Description=Xen-Orchestra - Xen Server Web Manager
-After=network.target
-After=network-online.target
-Wants=network-online.target
+=== "/etc/systemd/system/xo.service"
 
-[Service]
-User=xo
-Group=xo
-Environment=NODE_OPTIONS=--use-openssl-ca
-Environment=NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-bundle.crt
-ExecStart=/opt/xen-orchestra/packages/xo-server/bin/xo-server
-Restart=always
-RestartSec=10
+    ```ini
+    [Unit]
+    Description=Xen-Orchestra - Xen Server Web Manager
+    After=network.target
+    After=network-online.target
+    Wants=network-online.target
 
-[Install]
-WantedBy=multi-user.target" | sudo tee /etc/systemd/system/xo.service >/dev/null
-```
+    [Service]
+    User=xo
+    Group=xo
+    Environment=NODE_OPTIONS=--use-openssl-ca
+    Environment=NODE_EXTRA_CA_CERTS=/etc/ssl/certs/ca-bundle.crt
+    ExecStart=/opt/xen-orchestra/packages/xo-server/bin/xo-server
+    Restart=always
+    RestartSec=10
+
+    [Install]
+    WantedBy=multi-user.target
+    ```
 
 To allow the mount of NFS remotes, a few things need to be done.
 
@@ -171,14 +200,17 @@ sudo mkdir /etc/systemc/system/xo.service.d
 
 Create the service unit drop-in:
 
-```sh
-echo "[Service]
-RuntimeDirectory=xo-server
-RuntimeDirectoryMode=0750" | \
-sudo tee /etc/systemd/system/xo.service.d/nfs.conf >/dev/null
-```
+=== "/etc/systemd/system/xo.service.d/nfs.conf"
 
-To mount the NFS remotes, the `xo` user needs `NOPASSWD` `sudo` access to the `mount` and `umount` commands. Create a sudoers file containing these permissions:
+    ```ini
+    [Service]
+    RuntimeDirectory=xo-server
+    RuntimeDirectoryMode=0750
+    ```
+
+To mount the NFS remotes, the `xo` user needs `NOPASSWD` `sudo` access to the
+`mount` and `umount` commands. Create a sudoers file containing these
+permissions:
 
 ```sh
 echo -e "xo\tALL=(root)\tNOPASSWD:$(which mount),$(which umount)" | \
@@ -186,13 +218,19 @@ sudo tee /etc/sudoers.d/xo
 ```
 
 !!! Danger "Warning"
-    Do **NOT** edit `/etc/sudoers` directly, or without `visudo`. If an error is made, `sudo` will be broken and the `root` user will be needed to correct it.
+    Do **NOT** edit `/etc/sudoers` directly, or without `visudo`. If an error is
+    made, `sudo` will be broken and the `root` user will be needed to correct
+    it.
 
 !!! Info
-    A file is made in `/etc/sudoers.d` instead of adding a line to `/etc/sudoers` because updates can cause the `/etc/sudoers` file to be reset.
+    A file is made in `/etc/sudoers.d` instead of adding a line to
+    `/etc/sudoers` because updates can cause the `/etc/sudoers` file to be
+    reset.
 
 !!! Warning
-    If the server is domain-joined with `realmd` and `sssd`, and file domains are enabled (`enable_files_domain = True`) in `sssd.conf`, the `implicit_file` domain would have to be added to the `xo` username:
+    If the server is domain-joined with `realmd` and `sssd`, and file domains
+    are enabled (`enable_files_domain = True`) in `sssd.conf`, the
+    `implicit_file` domain would have to be added to the `xo` username:
 
     ```sh
     xo@implicit_domain    ALL=(root)    NOPASSWD: /usr/bin/mount, /usr/bin/umount
@@ -218,143 +256,159 @@ curl -I 127.0.0.1:8080
 
 `HTTP/1.1 302 Found` should be the response if Xen-Orchestra is running.
 
-## Nginx
+## Reverse Proxy
 
-Move the default Nginx configuration since it's easier to replace than edit:
+=== "Nginx"
+    Move the default Nginx configuration since it's easier to replace than edit:
 
-```sh
-sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf/orig
-```
+    ```sh
+    sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf/orig
+    ```
 
-Recreate `/etc/nginx/nginx.conf` with the following contents:
+    ===! "/etc/nginx/nginx.conf"
 
-```sh
-user nginx;
-pid /run/nginx.pid;
-worker_processes auto;
+        ```nginx
+        user nginx;
+        pid /run/nginx.pid;
+        worker_processes auto;
 
-include /usr/share/nginx/modules/*.conf;
+        include /usr/share/nginx/modules/*.conf;
 
-events {
-    multi_accept on;
-    worker_connections 1024;
-}
+        events {
+            multi_accept on;
+            worker_connections 1024;
+        }
 
-http {
-    log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
-                      '$status $body_bytes_sent "$http_referer" '
-                      '"$http_user_agent" "$http_x_forwarded_for"';
+        http {
+            log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                            '$status $body_bytes_sent "$http_referer" '
+                            '"$http_user_agent" "$http_x_forwarded_for"';
 
-    access_log  /var/log/nginx/access.log  main;
-    error_log   /var/log/nginx/error.log warn;
+            access_log  /var/log/nginx/access.log  main;
+            error_log   /var/log/nginx/error.log warn;
 
-    sendfile            on;
-    tcp_nopush          on;
-    server_tokens       off;
-    log_not_found       off;
-    types_hash_max_size 2048;
+            sendfile            on;
+            tcp_nopush          on;
+            server_tokens       off;
+            log_not_found       off;
+            types_hash_max_size 2048;
 
-    include             /etc/nginx/mime.types;
-    default_type        application/octet-stream;
+            include             /etc/nginx/mime.types;
+            default_type        application/octet-stream;
 
-    include /etc/nginx/conf.d/*.conf;
-}
-```
+            include /etc/nginx/conf.d/*.conf;
+        }
+        ```
 
-This configuration is essentially the default configuration without the default `server` blocks and a few adjustments.
+    This configuration is essentially the default configuration without the
+    default `server` blocks and a few adjustments.
 
-Create the server configuration at `/etc/nginx/conf.d/xo.conf` with the following contents.
+    ===! "/etc/nginx/conf.d/xo.conf"
 
-```sh hl_lines="3 9 39"
-server {
-    listen      80;
-    server_name xo.example.local;
-    return      301     https://$host$request_uri;
-}
+        ```nginx hl_lines="3 9 39"
+        server {
+            listen      80;
+            server_name xo.example.local;
+            return      301     https://$host$request_uri;
+        }
 
-server {
-    listen      443 ssl http2;
-    server_name xo.example.local;
+        server {
+            listen      443 ssl http2;
+            server_name xo.example.local;
 
-    ssl_certificate     /etc/ssl/private/xo/cert.pem;
-    ssl_certificate_key /etc/ssl/private/xo/key.pem;
-    ssl_protocols       TLSv1.2 TLSv1.3;
-    ssl_ciphers         ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
+            ssl_certificate     /etc/ssl/private/xo/cert.pem;
+            ssl_certificate_key /etc/ssl/private/xo/key.pem;
+            ssl_protocols       TLSv1.2 TLSv1.3;
+            ssl_ciphers         ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
 
-    add_header  X-Frame-Options             "SAMEORIGIN"                                                    always;
-    add_header  X-XSS-Protection            "1; mode=block"                                                 always;
-    add_header  X-Content-Type-Options      "nosniff"                                                       always;
-    add_header  Referrer-Policy             "no-referrer-when-downgrade"                                    always;
-    add_header  Content-Security-Policy     "default-src 'self' http: https: data: blob: 'unsafe-inline'"   always;
-    add_header  Strict-Transport-Security   "max-age=31536000"                                              always;
+            add_header  X-Frame-Options             "SAMEORIGIN"                                                    always;
+            add_header  X-XSS-Protection            "1; mode=block"                                                 always;
+            add_header  X-Content-Type-Options      "nosniff"                                                       always;
+            add_header  Referrer-Policy             "no-referrer-when-downgrade"                                    always;
+            add_header  Content-Security-Policy     "default-src 'self' http: https: data: blob: 'unsafe-inline'"   always;
+            add_header  Strict-Transport-Security   "max-age=31536000"                                              always;
 
-    location / {
-        proxy_http_version      1.1;
-        proxy_cache_bypass      $http_upgrade;
-        proxy_set_header        Upgrade                 $http_upgrade;
-        proxy_set_header        Connection              "upgrade";
-        proxy_set_header        Host                    $host;
-        proxy_set_header        X-Real-IP               $remote_addr;
-        proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
-        proxy_set_header        X-Forwarded-Proto       $scheme;
-        proxy_set_header        X-Forwarded-Host        $host;
-        proxy_set_header        X-Forwarded-Port        $server_port;
+            location / {
+                proxy_http_version      1.1;
+                proxy_cache_bypass      $http_upgrade;
+                proxy_set_header        Upgrade                 $http_upgrade;
+                proxy_set_header        Connection              "upgrade";
+                proxy_set_header        Host                    $host;
+                proxy_set_header        X-Real-IP               $remote_addr;
+                proxy_set_header        X-Forwarded-For         $proxy_add_x_forwarded_for;
+                proxy_set_header        X-Forwarded-Proto       $scheme;
+                proxy_set_header        X-Forwarded-Host        $host;
+                proxy_set_header        X-Forwarded-Port        $server_port;
 
-        proxy_pass      http://127.0.0.1:8080/;
+                proxy_pass      http://127.0.0.1:8080/;
 
-        proxy_read_timeout 1800;
+                proxy_read_timeout 1800;
 
-        client_max_body_size 4G;
-    }
-}
-```
+                client_max_body_size 4G;
+            }
+        }
+        ```
 
-!!! Info
-    Ensure the `server_name` property reflects the domain name that Xen-Orchestra will be accessed by.
+    !!! Info
+        Ensure the `server_name` property reflects the domain name that
+        Xen-Orchestra will be accessed by.
 
-!!! Info
-    If the "Virtual Machine Import" feature will be used, the `client_max_body_size` property may need to be adjusted depending on the size of your VM backup files. If a file is larger than what is defined here, Nginx will respond with a `client intended to send too large body` error.
+    !!! Info
+        If the "Virtual Machine Import" feature will be used, the
+        `client_max_body_size` property may need to be adjusted depending on the
+        size of your VM backup files. If a file is larger than what is defined
+        here, Nginx will respond with a `client intended to send too large body`
+        error.
 
-Ensure SSL files are in the correct locations:
+    Ensure SSL files are in the correct locations:
 
-|                       |                                   |
-|-                      |-                                  |
-| Private Key           | `/etc/ssl/private/xo/key.pem`     |
-| Public Certificate    | `/etc/ssl/private/xo/cert.pem`    |
+    |                       |                                   |
+    |-                      |-                                  |
+    | Private Key           | `/etc/ssl/private/xo/key.pem`     |
+    | Public Certificate    | `/etc/ssl/private/xo/cert.pem`    |
 
-If you don't already have a certificate and want to use a self-signed one, see [here](../../self-signed-certificate-with-root/) for how to create an installable self-signed certificate.
+    If you don't already have a certificate and want to use a self-signed one,
+    see [here](../../self-signed-certificate-with-root/) for how to create an
+    installable self-signed certificate.
 
-Test the configuration:
+    Test the configuration:
 
-```sh
-sudo nginx -t
-```
+    ```sh
+    sudo nginx -t
+    ```
 
-Restart Nginx:
+    Restart Nginx:
 
-```sh
-sudo systemctl restart nginx.service
-```
+    ```sh
+    sudo systemctl restart nginx.service
+    ```
 
-Allow HTTP (port `80`) and HTTPS (port `443`) through the firewall:
+    Allow HTTP (port `80`) and HTTPS (port `443`) through the firewall:
 
-```sh
-sudo firewall-cmd --permanent --zone=public --add-service=http
-```
+    ```sh
+    sudo firewall-cmd --permanent --zone=public --add-service=http
+    ```
 
-```sh
-sudo firewall-cmd --permanent --zone=public --add-service=https
-```
+    ```sh
+    sudo firewall-cmd --permanent --zone=public --add-service=https
+    ```
 
-Reload the firewall with the new rules:
+    Reload the firewall with the new rules:
 
-```sh
-sudo firewall-cmd --reload
-```
+    ```sh
+    sudo firewall-cmd --reload
+    ```
+
+=== "HAProxy"
+    ***Coming Soon***
+
+=== "Apache"
+    ***Coming Soon***
 
 ### SELinux
 
-If SELinux is enforcing (and it should be), allow Nginx to connect and proxy with the following rules:
+If SELinux is enforcing (and it should be), allow the reverse proxy to connect
+and proxy with the following rules:
 
 ```sh
 sudo setsebool -P httpd_can_network_connect 1
@@ -379,13 +433,16 @@ Default credentials are:
 
 ## Plugins
 
-Several plugins are included in the Xen-Orchestra repository, but must be "enabled".
+Several plugins are included in the Xen-Orchestra repository, but must be
+"enabled".
 
 ### auth-github
 
-This plugin can be configured to allow users to login using Github Single Sign-On (SSO).
+This plugin can be configured to allow users to login using Github Single
+Sign-On (SSO).
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-auth-github \
@@ -394,40 +451,48 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-auth-github \
 
 ### auth-google
 
-This plugin can be configured to allow users to login using Google Single Sign-On (SSO).
+This plugin can be configured to allow users to login using Google Single
+Sign-On (SSO).
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-auth-google \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### auth-ldap
 
-This plugin can be configured to allow users to login using the Lightweight Directory Access Protocol (LDAP) (including Microsoft&reg; Active Directory&trade;).
+This plugin can be configured to allow users to login using the Lightweight
+Directory Access Protocol (LDAP)
+(including Microsoft&reg; Active Directory&trade;).
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-auth-ldap \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### auth-saml
 
-This plugin can be configured to allow users to login using Security Assertion Markup Language (SAML).
+This plugin can be configured to allow users to login using Security Assertion
+Markup Language (SAML).
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-auth-saml \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### backup-reports
 
-This plugin can be configured to deliver Backup task reports to specified users through E-Mail or eXtensible Messaging and Presence Protocol (XMPP).
+This plugin can be configured to deliver Backup task reports to specified users
+through E-Mail or eXtensible Messaging and Presence Protocol (XMPP).
 
 !!! Note
     E-Mail reports require the [transport-email](#transport-email) plugin
@@ -435,125 +500,147 @@ This plugin can be configured to deliver Backup task reports to specified users 
 !!! Note
     XMPP reports require the [transport-xmpp](#transport-xmpp) plugin
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-backup-reports \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### load-balancer
 
-This plugin can be configured to assign balance Virtual Machines between servers in a pool based on performance, density, or configurable CPU or memory thresholds.
+This plugin can be configured to assign balance Virtual Machines between servers
+in a pool based on performance, density, or configurable CPU or memory
+thresholds.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-load-balancer \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### perf-alert
 
-This plugin can be configured to notify specified users when a host or Virtual Machine reaches a specifed CPU or memory utilization threshold. Notifications for Storage Repository usage is also configurable.
+This plugin can be configured to notify specified users when a host or Virtual
+Machine reaches a specifed CPU or memory utilization threshold. Notifications
+for Storage Repository usage is also configurable.
 
 !!! Note
     E-Mail reports require the [transport-email](#transport-email) plugin
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-perf-alert \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### sdn-controller
 
-This plugin can be enabled to control OpenVSwitch virtual networks. Can be configured with a TLS certificate and key to encrypt network traffic.
+This plugin can be enabled to control OpenVSwitch virtual networks. Can be
+configured with a TLS certificate and key to encrypt network traffic.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-sdn-controller \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### transport-email
 
 This plugin can be configured to use an SMTP service to send E-Mail.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-email \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### transport-icinga2
 
-This plugin can be configured to send notifications to an [Icinga 2](https://icinga.com/docs/icinga2/latest/) server.
+This plugin can be configured to send notifications to an
+[Icinga 2](https://icinga.com/docs/icinga2/latest/) server.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-icinga2 \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### transport-nagios
 
-This plugin can be configured to send notifications to a [Nagios](https://www.nagios.org/) server.
+This plugin can be configured to send notifications to a
+[Nagios](https://www.nagios.org/) server.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-nagios \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### transport-slack
 
-This plugin can be configured to send notifications to a [Slack](https://slack.com/) channel.
+This plugin can be configured to send notifications to a
+[Slack](https://slack.com/) channel.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-slack \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### transport-xmpp
 
-This plugin can be configured to send notifications to an [XMPP](https://xmpp.org/) server.
+This plugin can be configured to send notifications to an
+[XMPP](https://xmpp.org/) server.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-xmpp \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### usage-report
 
-This plugin can be configured to send usage reports to specified users on monthly, weekly, or daily intervals.
+This plugin can be configured to send usage reports to specified users on
+monthly, weekly, or daily intervals.
 
 !!! Note
     E-Mail reports require the [transport-email](#transport-email) plugin
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-usage-report \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
 ### web-hooks
 
-This plugin can be configured to send web hook messages on specifed events to a receiving endpoint.
+This plugin can be configured to send web hook messages on specifed events to a
+receiving endpoint.
 
-Create a symbolic link from the plugin's directory to the `xo-server` `node_modules` directory. Plugin is enabled on restart.
+Create a symbolic link from the plugin's directory to the `xo-server`
+`node_modules` directory. Plugin is enabled on restart.
 
 ```sh
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-web-hooks \
-/opt/xen-orchestra/packages/xo-server/node_modules/
+    /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
