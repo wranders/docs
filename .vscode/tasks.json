@@ -4,42 +4,48 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Launch Local Server",
+            "label": "Build Dev Container",
             "type": "shell",
-            "command": "${config:python.pythonPath}",
-            "args": [
-                "-m",
-                "mkdocs",
-                "serve"
-            ],
-            "group": "test",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            }
+            "windows": {
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "podman build -t localhost/docs -f $(wslpath ''${workspaceFolder}'')/Dockerfile"
+                ]
+            },
+            "linux": {
+                "command": "podman",
+                "args": [
+                    "build",
+                    "-t", "localhost/docs",
+                    "-f", "${PWD}/Dockerfile"
+                ]
+            },
+            "problemMatcher": []
         },
         {
-            "label": "Build and Deploy",
+            "label": "Launch Dev Container",
             "type": "shell",
-            "command": "${config:python.pythonPath}",
-            "args": [
-                "-m",
-                "mkdocs",
-                "gh-deploy"
+            "dependsOn": [
+                "Build Dev Container"
             ],
-            "group": "build",
-            "presentation": {
-                "echo": true,
-                "reveal": "always",
-                "focus": false,
-                "panel": "shared",
-                "showReuseMessage": true,
-                "clear": true
-            }
+            "windows": {
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "podman run --rm -it -v $(wslpath ''${workspaceFolder}''):/docs -p 8000:8000 localhost/docs"
+                ]
+            },
+            "linux": {
+                "command": "podman",
+                "args": [
+                    "run", "--rm", "-it",
+                    "-v", "${PWD}:/docs",
+                    "-p", "8000:8000",
+                    "localhost/docs"
+                ]
+            },
+            "problemMatcher": []
         }
     ]
 }

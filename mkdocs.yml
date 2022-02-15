@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://squidfunk.github.io/mkdocs-material/schema.json
+
 site_name: Memory &omega;
 site_url: https://www.doubleu.codes/docs/
 site_description: Documentation
@@ -5,12 +7,25 @@ site_author: W Anders
 repo_name: wranders/docs
 repo_url: https://github.com/wranders/docs/
 edit_uri: edit/src/docs
-copyright: 'Copyright &copy; 2018-2021 W Anders'
+copyright: 'Copyright &copy; 2018-2022 W Anders'
 remote_branch: master
 
 theme:
-  name: material
+  favicon: 'img/favicon.ico'
+  features:
+  - header.autohide
+  - navigation.instant
+  - navigation.tabs
+  - navigation.top
+  - search.highlight
+  - search.suggest
+  - toc.integrate
+  font: false
+  icon:
+    repo: fontawesome/brands/github
   language: en
+  logo: 'img/logo.png'
+  name: material
   palette:
   - scheme: default
     media: "(prefers-color-scheme: light)"
@@ -24,37 +39,34 @@ theme:
     toggle:
       icon: material/toggle-switch
       name: Switch to light mode
-  font:
-    text: 'Roboto'
-    code: 'Roboto Mono'
-  logo: 'img/logo.png'
-  favicon: 'img/favicon.ico'
-  features:
-  - header.autohide
-  - navigation.instant
-  - navigation.tabs
-  - navigation.top
-  - search.highlight
-  - search.suggest
-  - toc.integrate
-
-plugins:
-- git-revision-date-localized
-- search
 
 markdown_extensions:
 - admonition
+- pymdownx.betterem:
+    smart_enable: all
+- pymdownx.caret
+- pymdownx.critic
+- pymdownx.details
 - pymdownx.highlight
 - pymdownx.inlinehilite
-- pymdownx.superfences
-- pymdownx.details
-- pymdownx.tabbed
-- pymdownx.caret
+- pymdownx.keys
 - pymdownx.mark
 - pymdownx.tilde
 - pymdownx.smartsymbols
+- pymdownx.snippets
+- pymdownx.superfences
+- pymdownx.tabbed:
+    alternate_style: true
+- pymdownx.tasklist:
+    custom_checkbox: true
+- tables
 - toc:
     permalink: true
+
+plugins:
+- git-revision-date-localized:
+    enable_creation_date: true
+- search
 
 nav:
 - Welcome: 'README.md'

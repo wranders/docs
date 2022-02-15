@@ -1,6 +1,0 @@
-{
-    "python.defaultInterpreterPath": "env\\scripts\\python.exe",
-    "yaml.schemas": {
-        "https://squidfunk.github.io/mkdocs-material/schema.json": "mkdocs.yml"
-    },
-}
