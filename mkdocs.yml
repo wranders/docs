@@ -40,8 +40,12 @@ theme:
       icon: material/toggle-switch
       name: Switch to light mode
 
+extra_css:
+- stylesheets/hideFooterNav.css
+
 markdown_extensions:
 - admonition
+- footnotes
 - pymdownx.betterem:
     smart_enable: all
 - pymdownx.caret
@@ -83,6 +87,9 @@ nav:
   - Services:
     - 'guides/services/README.md'
     - Xen-Orchestra: 'guides/services/xen-orchestra/README.md'
+  - WSL:
+    - 'guides/wsl/README.md'
+    - Automatic Hosts File: 'guides/wsl/automatic-hosts-file/README.md'
   - XCP-ng:
     - 'guides/xcp-ng/README.md'
     - ZFS Local Storage: 'guides/xcp-ng/zfs-local-storage/README.md'
