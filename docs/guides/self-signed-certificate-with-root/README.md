@@ -2,18 +2,30 @@
 
 ## Why
 
-If you're installing a web-based service that won't be internet accessible and you can't use [Let's Encrypt](https://letsencrypt.org/), self-signed certificates are commonly used. But, many are annoyed by the trust errors that modern browsers display when accessing them.
+If you're installing a web-based service that won't be internet accessible and
+you can't use [Let's Encrypt](https://letsencrypt.org/), self-signed
+certificates are commonly used. But, many are annoyed by the trust errors that
+modern browsers display when accessing them.
 
-Some don't want to go through the process of setting up a full-blown certificate authority (CA), especially in a home setting, but certificates without roots cannot be installed, so to avoid certificate trust errors a root certificate authority is needed.
+Some don't want to go through the process of setting up a full-blown certificate
+authority (CA), especially in a home setting, but certificates without roots
+cannot be installed, so to avoid certificate trust errors a root certificate
+authority is needed.
 
-We'll set up a small certificate authority using [OpenSSL](https://www.openssl.org/) for our service.
+We'll set up a small certificate authority using
+[OpenSSL](https://www.openssl.org/) for our service.
 
 !!! Warning
-    This shouldn't be used for anything outside of self-hosted services that aren't internet facing. This guide will not include certificate revocation lists (CRL) or Online Certificate Status Protocol (OCSP). Internet-facing services should really include a way to publish a list of revoked certificates.
+    This shouldn't be used for anything outside of self-hosted services that
+    aren't internet facing. This guide will not include certificate revocation
+    lists (CRL) or Online Certificate Status Protocol (OCSP). Internet-facing
+    services should really include a way to publish a list of revoked
+    certificates.
 
 ## Directory Setup
 
-Create the directories for the root CA. I'm using `/etc/ssl/private` as the base directory and I'm using the `root` user to do this, but you can use `sudo`.
+Create the directories for the root CA. I'm using `/etc/ssl/private` as the base
+directory and I'm using the `root` user to do this, but you can use `sudo`.
 
 ```sh
 mkdir -p /etc/ssl/private/root/{certs,csr,newcerts,private}
@@ -35,7 +47,8 @@ echo 1000 | tee /etc/ssl/private/root/serial
 
 ## Configuration
 
-Next, create the OpenSSL configuration for the root CA (`/etc/ssl/private/root/openssl.conf`):
+Next, create the OpenSSL configuration for the root CA
+(`/etc/ssl/private/root/openssl.conf`):
 
 ```sh hl_lines="57 58"
 [ca]
@@ -99,7 +112,8 @@ IP.1                    = 192.168.0.10
 ```
 
 !!! Danger "Critical"
-    Edit the highlighted lines above to reflect the URL and IP address your service will be accessible by.
+    Edit the highlighted lines above to reflect the URL and IP address your
+    service will be accessible by.
 
 ## Root CA Pair Generation
 
@@ -109,7 +123,8 @@ Generate the root CA's private key:
 openssl genrsa -aes256 -out /etc/ssl/private/root/private/cakey.pem 4096
 ```
 
-You will be prompted for a password. Remember this as it will be needed to create the root's certificate and later to sign the service's certificate.
+You will be prompted for a password. Remember this as it will be needed to
+create the root's certificate and later to sign the service's certificate.
 
 ```sh
 chmod 400 /etc/ssl/private/root/cakey.pem
@@ -156,7 +171,10 @@ openssl req -new \
 -subj "/CN=myservice.example.local"
 ```
 
-If you used a different file name for the private key, make sure it's reflected, and make sure the last line (`-subj`) reflects the domain name used in `openssl.conf` for your service. Modern browsers may display errors if these domain names do not match.
+If you used a different file name for the private key, make sure it's reflected,
+and make sure the last line (`-subj`) reflects the domain name used in
+`openssl.conf` for your service. Modern browsers may display errors if these
+domain names do not match.
 
 Sign the CSR:
 
@@ -170,7 +188,8 @@ openssl ca -notext \
 
 Make sure the file names for the CSR and certificate are correct.
 
-Enter the password for the root CA private key, then `y` to sign the certificate, then `y` again to commit.
+Enter the password for the root CA private key, then `y` to sign the
+certificate, then `y` again to commit.
 
 ```sh
 chmod 444 /etc/ssl/private/root/certs/my-service.pem
@@ -197,14 +216,16 @@ cp /etc/ssl/private/root/certs/cacert.pem \
 /etc/ssl/private/my-service/cacert.pem
 ```
 
-If your service only takes a single certificate and key, the root CA certificate will need to be appended to the service's certificate:
+If your service only takes a single certificate and key, the root CA certificate
+will need to be appended to the service's certificate:
 
 ```sh
 cat /etc/ssl/private/my-servie/cacert.pem | \
 tee -a /etc/ssl/private/my-service/cert.pem >/dev/null
 ```
 
-If your service only takes a single file containing the whole chain, including the private key, append the chained certificate above to the key file:
+If your service only takes a single file containing the whole chain, including
+the private key, append the chained certificate above to the key file:
 
 ```sh
 cat /etc/ssl/private/my-service/cert.pem | \
