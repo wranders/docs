@@ -2,7 +2,7 @@ $scriptLocation="$env:USERPROFILE\Documents\PowerShell\Scripts\updateHosts.ps1"
 
 ################################################################################
 
-$trigger = cimclass MSFT_TaskEventTrigger root/Microsoft/Windows/TaskScheduler `
+$trigger = Get-CimClass MSFT_TaskEventTrigger root/Microsoft/Windows/TaskScheduler `
     | New-CimInstance -ClientOnly
 
 $trigger.Enabled = $true
