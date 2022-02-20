@@ -40,6 +40,12 @@ This script can be copied and paste inside an elevated PowerShell terminal.
 --8<-- "docs/guides/wsl/automatic-hosts-file/scripts/createUpdateTask.ps1"
 ```
 
+!!! info "Trigger Delay Format"
+    Event trigger delays are expressed as a string starting with the letter `P`.
+    `T` delimits date and time portions of the string. For more information,
+    refer to the Task Scheduler's `EventTrigger.Delay` property
+    documentation[^2].
+
 ## Wrap-Up
 
 Now shutdown and restart WSL.
@@ -76,3 +82,4 @@ Approximate round trip times in milli-seconds:
 You'll see that the IP addresses match.
 
 [^1]: [https://abdus.dev/posts/fixing-wsl2-localhost-access-issue/](https://abdus.dev/posts/fixing-wsl2-localhost-access-issue/){target=_blank rel="nofollow noopener noreferrer"}
+[^2]: [https://docs.microsoft.com/en-us/windows/win32/taskschd/eventtrigger-delay](https://docs.microsoft.com/en-us/windows/win32/taskschd/eventtrigger-delay){target=_blank rel="nofollow noopener noreferrer"}
