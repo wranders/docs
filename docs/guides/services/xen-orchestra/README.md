@@ -8,17 +8,17 @@
 
 This guide is written using the following versions:
 
-* [CentOS](https://www.centos.org/) 8.0.1905 (Core)
-* [Xen-Orchestra](https://xen-orchestra.com/) 5.54.0
-* [Node.js](https://nodejs.org/) 10.16.3
-* [Yarn](https://yarnpkg.com/) 1.12.1
-* [Nginx](https://www.nginx.com/) 1.14.1
-* [Redis](https://redis.io/) 5.0.3
+* CentOS[^1] 8.0.1905 (Core)
+* Xen-Orchestra[^2] 5.54.0
+* Node.js[^3] 10.16.3
+* Yarn[^4] 1.12.1
+* Nginx[^5] 1.14.1
+* Redis[^6] 5.0.3
 
 Certain considerations with configuration have been taken to satisfy my
 environment and requirements. Most notably:
 
-1. [XCP-ng](https://xcp-ng.org/) servers use certificates from my internal
+1. XCP-ng[^7] servers use certificates from my internal
 certificate authority (CA), so for Node.js to use the system's roots or provided
 roots without allowing "Unauthorized Certificates", it must run in an
 unprivileged state.
@@ -31,7 +31,7 @@ non-root requirement
 3. Nginx will automatically redirect HTTP traffic to HTTPS
 4. NFS remotes are used for backup services, so the Xen-Orchestra user is
 granted `NOPASSWD` access in `sudoers` to the `mount` and `umount` commands.
-    * A [systemd](https://freedesktop.org/wiki/Software/systemd/) drop-in is
+    * A systemd[^8] drop-in is
     used to define a RuntimeDirectory where Xen-Orchestra mounts NFS remotes
 
 ---
@@ -41,8 +41,8 @@ granted `NOPASSWD` access in `sudoers` to the `mount` and `umount` commands.
 The only third-party repository that is required is Yarn's.
 
 ```sh
-curl -sL https://dl.yarnpkg.com/rpm/yarn.repo \
-    | sudo tee /etc/yum.repos.d/yarn.repo
+curl -sL https://dl.yarnpkg.com/rpm/yarn.repo | \
+  sudo tee /etc/yum.repos.d/yarn.repo
 ```
 
 ## Dependencies
@@ -67,11 +67,9 @@ sudo dnf install -y \
 ```
 
 !!! Info
-    The official
-    ["From the Sources"](https://xen-orchestra.com/docs/from_the_sources.html)
-    documentation says to use Node.js 8, but the System `AppStream` repository
-    contains v10. I've encountered no issues with the newer version. Besides, v8
-    is [EOL as of 1 January 2020](https://nodejs.org/en/about/releases/) and no
+    The official "From the Sources"[^9] documentation says to use Node.js 8, but
+    the System `AppStream` repository contains v10. I've encountered no issues
+    with the newer version. Besides, v8 is EOL as of 1 January 2020[^10] and no
     longer recieving any updates.
 
 ## Redis
@@ -96,8 +94,8 @@ Create the application user:
 
 ```sh
 sudo adduser -m -U \
-    -c "Xen-Orchestra User" \
-    -s /sbin/nologin xo
+  -c "Xen-Orchestra User" \
+  -s /sbin/nologin xo
 ```
 
 !!! Error "Critical"
@@ -467,8 +465,8 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-auth-google \
 ### auth-ldap
 
 This plugin can be configured to allow users to login using the Lightweight
-Directory Access Protocol (LDAP)
-(including Microsoft&reg; Active Directory&trade;).
+Directory Access Protocol (LDAP) (including Microsoft&reg; Active
+Directory&trade;).
 
 Create a symbolic link from the plugin's directory to the `xo-server`
 `node_modules` directory. Plugin is enabled on restart.
@@ -568,8 +566,7 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-email \
 
 ### transport-icinga2
 
-This plugin can be configured to send notifications to an
-[Icinga 2](https://icinga.com/docs/icinga2/latest/) server.
+This plugin can be configured to send notifications to an Icinga 2[^11] server.
 
 Create a symbolic link from the plugin's directory to the `xo-server`
 `node_modules` directory. Plugin is enabled on restart.
@@ -581,8 +578,7 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-icinga2 \
 
 ### transport-nagios
 
-This plugin can be configured to send notifications to a
-[Nagios](https://www.nagios.org/) server.
+This plugin can be configured to send notifications to a Nagios[^12] server.
 
 Create a symbolic link from the plugin's directory to the `xo-server`
 `node_modules` directory. Plugin is enabled on restart.
@@ -594,8 +590,7 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-nagios \
 
 ### transport-slack
 
-This plugin can be configured to send notifications to a
-[Slack](https://slack.com/) channel.
+This plugin can be configured to send notifications to a Slack[^13] channel.
 
 Create a symbolic link from the plugin's directory to the `xo-server`
 `node_modules` directory. Plugin is enabled on restart.
@@ -607,8 +602,7 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-transport-slack \
 
 ### transport-xmpp
 
-This plugin can be configured to send notifications to an
-[XMPP](https://xmpp.org/) server.
+This plugin can be configured to send notifications to an XMPP[^14] server.
 
 Create a symbolic link from the plugin's directory to the `xo-server`
 `node_modules` directory. Plugin is enabled on restart.
@@ -646,3 +640,18 @@ Create a symbolic link from the plugin's directory to the `xo-server`
 sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-web-hooks \
     /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
+
+[^1]: [https://www.centos.org/](https://www.centos.org/)
+[^2]: [https://xen-orchestra.com/](https://xen-orchestra.com/)
+[^3]: [https://nodejs.org/](https://nodejs.org/)
+[^4]: [https://yarnpkg.com/](https://yarnpkg.com/)
+[^5]: [https://www.nginx.com/](https://www.nginx.com/)
+[^6]: [https://redis.io/](https://redis.io/)
+[^7]: [https://xcp-ng.org/](https://xcp-ng.org/)
+[^8]: [https://freedesktop.org/wiki/Software/systemd/](https://freedesktop.org/wiki/Software/systemd/)
+[^9]: [https://xen-orchestra.com/docs/from_the_sources.html](https://xen-orchestra.com/docs/from_the_sources.html)
+[^10]: [https://nodejs.org/en/about/releases/](https://nodejs.org/en/about/releases/)
+[^11]: [https://icinga.com/](https://icinga.com/)
+[^12]: [https://www.nagios.org/](https://www.nagios.org/)
+[^13]: [https://slack.com/](https://slack.com/)
+[^14]: [https://xmpp.org/](https://xmpp.org/)
