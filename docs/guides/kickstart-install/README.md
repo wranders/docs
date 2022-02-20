@@ -22,8 +22,8 @@ Extract the `grub.cfg` file so you can modify it.
 
 ```sh
 xorriso -osirrox on \
-    -indev $ISO \
-    -extract /EFI/Boot/grub.cfg ./grub.cfg
+  -indev $ISO \
+  -extract /EFI/Boot/grub.cfg ./grub.cfg
 ```
 
 ## Modify GRUB Configuration
@@ -105,12 +105,12 @@ unset KS_USER KS_USER_GECOS KS_USER_PASSWD KS_TZ
 
 ```sh
 xorriso \
-    -indev $ISO \
-    -outdev ./custom.iso \
-    -compliance no_emul_toc \
-    -map ./grub.cfg /EFI/BOOT/grub.cfg \
-    -map ./ks.cfg /ks.cfg \
-    -boot_image any replay
+  -indev $ISO \
+  -outdev ./custom.iso \
+  -compliance no_emul_toc \
+  -map ./grub.cfg /EFI/BOOT/grub.cfg \
+  -map ./ks.cfg /ks.cfg \
+  -boot_image any replay
 ```
 
 Your new custom ISO will be in your current working directory at `./custom.iso`.
