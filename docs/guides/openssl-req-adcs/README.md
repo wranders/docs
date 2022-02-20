@@ -16,42 +16,17 @@ For example, to request a certificate using the `WebServices` template, use:
 
 Edit the following request template:
 
-```ini
-# myservice.example.com.cnf
-
-[req]
-default_bits = 2048
-default_md = sha256
-distinguished_name = req_dn
-req_extensions = v3_req
-prompt = no
-
-[req_dn]
-C = US
-ST = Texas
-L = San Antonio
-O = Some Organization
-OU = Some Section
-CN = myservice.example.com
-
-[v3_req]
-basicConstraints = CA:FALSE
-keyUsage = critical, digitalSignature, keyEncipherment
-extendedKeyUsage = serverAuth
-subjectAltName = @alt_names
-1.3.6.1.4.1.311.20.2 = ASN1:UTF8String:ADCSTemplateName
-
-[alt_names]
-DNS.1 = myservice.example.com
+```ini title="myservice.example.com.cnf"
+--8<-- "docs/guides/openssl-req-adcs/config/myservice.example.com.conf"
 ```
 
 Then create your private key and CSR with the following command:
 
 ```sh
 openssl req -new -nodes \
-    -keyout service.key \
-    -out service.csr \
-    -config myservice.example.com.cnf
+  -keyout service.key \
+  -out service.csr \
+  -config myservice.example.com.cnf
 ```
 
 Verify the requst using:
