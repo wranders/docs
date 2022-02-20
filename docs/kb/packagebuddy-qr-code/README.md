@@ -4,9 +4,8 @@ This will show how to generate QR codes compatible with the PackageBuddy package
 tracking application.
 
 I love this application, but it hasn't been updated since about 2013. So this is
-in anticipation of the application's website going offline and the convenient
-<a href="http://www.package-buddy.com/code" target="_blank" rel="nofollow noopener noreferrer">QR code generator</a>
-with it.
+in anticipation of the application's website going offline and the convenient QR
+code generator[^1] with it.
 
 ## Example QR Code
 
@@ -177,3 +176,5 @@ qrencode -t utf8 -8 "QR:${TRACKINGNUM}__${CARRIERSLUG}__${DESCRIPTION}__"
 | :-            | :-            |
 | chinapost     | China Post    |
 | russia        | Russian Post  |
+
+[^1]: [http://www.package-buddy.com/code](http://www.package-buddy.com/code){target=_blank rel="nofollow noopener noreferrer"}
