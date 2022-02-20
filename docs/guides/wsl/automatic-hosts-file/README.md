@@ -13,11 +13,11 @@ Much of this was taken from a site I found [^1]. I added the `stderr` null
 redirect because the `wsl` command when run in scripts complains about TTY size
 and will cause the script to fail.
 
-Since this writes to a location within `$env:windir`, elevated privileges are
-required to run this.
+Since this writes to a location within `#!powershell $env:windir`, elevated
+privileges are required to run this.
 
 The suggested directory to place this is
-`%USERPROFILE%\Documents\PowerShell\Scripts` with the file name
+`#!powershell $env:USERPROFILE\Documents\PowerShell\Scripts` with the file name
 `updateHosts.ps1`.
 
 ```powershell title="updateHosts.ps1"
@@ -30,9 +30,9 @@ The following script creates a scheduled task that watches for loading Hyper-V
 network drivers.
 
 This script must be run with elevated privileges. The above script is assumed to
-be placed in `%USERPROFILE%\Documents\PowerShell\Scripts` and be named
-`updateHosts.ps1`. If the script is a different name or in a different location,
-change the `$scriptLocation` variable.
+be placed in `#!powershell $env:USERPROFILE\Documents\PowerShell\Scripts` and be
+named `updateHosts.ps1`. If the script is a different name or in a different
+location, change the `#!powershell $scriptLocation` variable.
 
 This script can be copied and paste inside an elevated PowerShell terminal.
 
