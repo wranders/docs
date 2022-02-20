@@ -46,68 +46,10 @@ echo 1000 | tee /etc/ssl/private/root/serial
 
 ## Configuration
 
-Next, create the OpenSSL configuration for the root CA
-(`/etc/ssl/private/root/openssl.conf`):
+Next, create the OpenSSL configuration for the root CA:
 
-```sh hl_lines="57 58"
-[ca]
-default_ca              = CA_default
-
-[CA_default]
-dir                     = /etc/ssl/private/root
-certs                   = $dir/certs
-new_certs_dir           = $dir/newcerts
-database                = $dir/index.txt
-serial                  = $dir/serial
-RANDFILE                = $dir/private/.rand
-certificate             = $dir/certs/cacert.pem
-private_key             = $dir/private/cakey.pem
-default_md              = sha256
-default_days            = 730
-policy                  = policy_loose
-
-[policy_loose]
-countryName             = optional
-stateOrProvinceName     = optional
-organizationName        = optional
-organizationalUnitName  = optional
-commonName              = supplied
-emailAddress            = optional
-
-[req]
-default_bits            = 2048
-default_md              = sha256
-distinguished_name      = dn_req
-
-[dn_req]
-countryName             = Country Name (2 letter code)
-stateOrProvinceName     = State or Province Name
-localityName            = Locality Name
-0.organizationName      = Organization Name
-organizationalUnitName  = Organizational Unit Name
-commonName              = Common Name
-emailAddress            = Email Address
-
-[v3_ca]
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid:always,issuer
-basicConstraints        = critical,CA:TRUE,pathlen:0
-keyUsage                = critical,digitalSignature,keyCertSign
-
-[v3_server]
-subjectKeyIdentifier    = hash
-authorityKeyIdentifier  = keyid,issuer:always
-basicConstraints        = CA:FALSE
-keyUsage                = critical,digitalSignature,keyEncipherment
-extendedKeyUsage        = serverAuth
-subjectAltName          = @alt_name_server
-
-[req_server]
-subjectAltName          = @alt_name_server
-
-[alt_name_server]
-DNS.1                   = myservice.example.local
-IP.1                    = 192.168.0.10
+```sh hl_lines="57 58" title="/etc/ssl/private/root/openssl.conf"
+--8<-- "docs/guides/self-signed-certificate-with-root/config/openssl.conf"
 ```
 
 !!! Danger "Critical"
