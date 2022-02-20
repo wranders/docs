@@ -1,8 +1,7 @@
 # XCP-ng Local ZFS Storage
 
-[ZFS (on Linux)](https://zfsonlinux.org/) has been available on
-[XCP-ng](https://xcp-ng.org/) since v7.5, but has been stable and included in
-the standard repository as of v8.0.
+ZFS (on Linux)[^1] has been available on XCP-ng[^2] since v7.5, but has been
+stable and included in the standard repository as of v8.0.
 
 ## Connecting Drives
 
@@ -127,6 +126,10 @@ device-config:location=/tank/local
 Name the repository to whatever you want and make sure the location is accurate
 if you used a different name for the dataset.
 
-For other servers, [Xen-Orchestra](https://xen-orchestra.com/) makes it easier
+For other servers, Xen-Orchestra[^3] makes it easier
 to mount local ZFS storage. A guide can be found
 [here](../../services/xen-orchestra/) if you want to set that up.
+
+[^1]: [https://zfsonlinux.org/](https://zfsonlinux.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^2]: [https://xcp-ng.org/](https://xcp-ng.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^3]: [https://xen-orchestra.com/](https://xen-orchestra.com/){target=_blank rel="nofollow noopener noreferrer"}
