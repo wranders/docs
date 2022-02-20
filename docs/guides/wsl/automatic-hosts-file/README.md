@@ -150,4 +150,4 @@ Approximate round trip times in milli-seconds:
 
 You'll see that the IP addresses match.
 
-[^1]: <a href="https://abdus.dev/posts/fixing-wsl2-localhost-access-issue/" target="_blank" rel="nofollow noopener noreferrer">https://abdus.dev/posts/fixing-wsl2-localhost-access-issue/</a>
+[^1]: [https://abdus.dev/posts/fixing-wsl2-localhost-access-issue/](https://abdus.dev/posts/fixing-wsl2-localhost-access-issue/){target=_blank rel="nofollow noopener noreferrer"}
