@@ -15,9 +15,7 @@ Each line is a tab-delimited list of certificates and their related information.
 | `FILENAME`    | Filename, or `unknown`                                        |
 | `SUBJECT`     | Certificate Subject Name                                      |
 
-Raw file:
-
-```txt
+```txt title="index.txt"
 R    220123230539Z    220122231135Z    143297E5CF148559B5F4F87F9E03F1A6    unknown    CN=localhost
 V    220123230539Z        BDD5E71ED14467B6336D0B2B0A333FE2    unknown    CN=localhost
 ```
