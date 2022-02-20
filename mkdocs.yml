@@ -96,6 +96,6 @@ nav:
   - XCP-ng:
     - 'guides/xcp-ng/README.md'
     - ZFS Local Storage: 'guides/xcp-ng/zfs-local-storage/README.md'
+  - Kickstart Install: 'guides/kickstart-install/README.md'
   - Self-Signed Certificate with Root: 'guides/self-signed-certificate-with-root/README.md'
   - OpenSSL Request ADCS: 'guides/openssl-req-adcs/README.md'
-  - Kickstart Install: 'guides/kickstart-install/README.md'
