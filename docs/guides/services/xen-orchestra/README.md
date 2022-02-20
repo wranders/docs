@@ -641,17 +641,17 @@ sudo -u xo ln -s /opt/xen-orchestra/packages/xo-server-web-hooks \
     /opt/xen-orchestra/packages/xo-server/node_modules/
 ```
 
-[^1]: [https://www.centos.org/](https://www.centos.org/)
-[^2]: [https://xen-orchestra.com/](https://xen-orchestra.com/)
-[^3]: [https://nodejs.org/](https://nodejs.org/)
-[^4]: [https://yarnpkg.com/](https://yarnpkg.com/)
-[^5]: [https://www.nginx.com/](https://www.nginx.com/)
-[^6]: [https://redis.io/](https://redis.io/)
-[^7]: [https://xcp-ng.org/](https://xcp-ng.org/)
-[^8]: [https://freedesktop.org/wiki/Software/systemd/](https://freedesktop.org/wiki/Software/systemd/)
-[^9]: [https://xen-orchestra.com/docs/from_the_sources.html](https://xen-orchestra.com/docs/from_the_sources.html)
-[^10]: [https://nodejs.org/en/about/releases/](https://nodejs.org/en/about/releases/)
-[^11]: [https://icinga.com/](https://icinga.com/)
-[^12]: [https://www.nagios.org/](https://www.nagios.org/)
-[^13]: [https://slack.com/](https://slack.com/)
-[^14]: [https://xmpp.org/](https://xmpp.org/)
+[^1]: [https://www.centos.org/](https://www.centos.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^2]: [https://xen-orchestra.com/](https://xen-orchestra.com/){target=_blank rel="nofollow noopener noreferrer"}
+[^3]: [https://nodejs.org/](https://nodejs.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^4]: [https://yarnpkg.com/](https://yarnpkg.com/){target=_blank rel="nofollow noopener noreferrer"}
+[^5]: [https://www.nginx.com/](https://www.nginx.com/){target=_blank rel="nofollow noopener noreferrer"}
+[^6]: [https://redis.io/](https://redis.io/){target=_blank rel="nofollow noopener noreferrer"}
+[^7]: [https://xcp-ng.org/](https://xcp-ng.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^8]: [https://freedesktop.org/wiki/Software/systemd/](https://freedesktop.org/wiki/Software/systemd/){target=_blank rel="nofollow noopener noreferrer"}
+[^9]: [https://xen-orchestra.com/docs/from_the_sources.html](https://xen-orchestra.com/docs/from_the_sources.html){target=_blank rel="nofollow noopener noreferrer"}
+[^10]: [https://nodejs.org/en/about/releases/](https://nodejs.org/en/about/releases/){target=_blank rel="nofollow noopener noreferrer"}
+[^11]: [https://icinga.com/](https://icinga.com/){target=_blank rel="nofollow noopener noreferrer"}
+[^12]: [https://www.nagios.org/](https://www.nagios.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^13]: [https://slack.com/](https://slack.com/){target=_blank rel="nofollow noopener noreferrer"}
+[^14]: [https://xmpp.org/](https://xmpp.org/){target=_blank rel="nofollow noopener noreferrer"}
