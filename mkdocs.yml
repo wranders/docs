@@ -79,6 +79,7 @@ nav:
 - Knowledge Base:
   - 'kb/README.md'
   - IETF RFC:
+    - 'kb/ietf-rfc/README.md'
     - LDAP: 'kb/ietf-rfc/ldap/README.md'
   - Servers:
     - Dell R510: 'kb/servers/dell-r510/README.md'
