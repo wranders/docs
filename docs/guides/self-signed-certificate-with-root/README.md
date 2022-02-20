@@ -3,17 +3,16 @@
 ## Why
 
 If you're installing a web-based service that won't be internet accessible and
-you can't use [Let's Encrypt](https://letsencrypt.org/), self-signed
-certificates are commonly used. But, many are annoyed by the trust errors that
-modern browsers display when accessing them.
+you can't use Let's Encrypt[^1], self-signed certificates are commonly used.
+But, many are annoyed by the trust errors that modern browsers display when
+accessing them.
 
 Some don't want to go through the process of setting up a full-blown certificate
 authority (CA), especially in a home setting, but certificates without roots
 cannot be installed, so to avoid certificate trust errors a root certificate
 authority is needed.
 
-We'll set up a small certificate authority using
-[OpenSSL](https://www.openssl.org/) for our service.
+We'll set up a small certificate authority using OpenSSL[^2] for our service.
 
 !!! Warning
     This shouldn't be used for anything outside of self-hosted services that
@@ -231,3 +230,6 @@ the private key, append the chained certificate above to the key file:
 cat /etc/ssl/private/my-service/cert.pem | \
 tee -a /etc/ssl/private/my-service/key.pem >/dev/null
 ```
+
+[^1]: [https://letsencrypt.org/](https://letsencrypt.org/){target=_blank rel="nofollow noopener noreferrer"}
+[^2]: [https://www.openssl.org/](https://www.openssl.org/){target=_blank rel="nofollow noopener noreferrer"}
