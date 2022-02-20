@@ -45,6 +45,7 @@ extra_css:
 
 markdown_extensions:
 - admonition
+- attr_list
 - footnotes
 - pymdownx.betterem:
     smart_enable: all
