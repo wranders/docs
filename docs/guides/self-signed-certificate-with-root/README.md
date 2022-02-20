@@ -75,12 +75,12 @@ Create the root CA certificate:
 
 ```sh hl_lines="7"
 openssl req -new -x509 -sha256 \
--extensions v3_ca \
--days 3650 \
--config /etc/ssl/private/root/openssl.conf \
--key /etc/ssl/private/root/private/cakey.pem \
--out /etc/ssl/private/root/certs/cacert.pem \
--subj "/CN=My Service Root CA"
+  -extensions v3_ca \
+  -days 3650 \
+  -config /etc/ssl/private/root/openssl.conf \
+  -key /etc/ssl/private/root/private/cakey.pem \
+  -out /etc/ssl/private/root/certs/cacert.pem \
+  -subj "/CN=My Service Root CA"
 ```
 
 This above highlighted line can be changed to anything you want.
@@ -105,11 +105,11 @@ Create a certificate signing request (CSR) for your service:
 
 ```sh hl_lines="3 6"
 openssl req -new \
--config /etc/ssl/private/root/openssl.conf \
--key /etc/ssl/private/root/private/my-service.pem \
--out /etc/ssl/private/root/csr/my-service.csr \
--reqexts req_server \
--subj "/CN=myservice.example.local"
+  -config /etc/ssl/private/root/openssl.conf \
+  -key /etc/ssl/private/root/private/my-service.pem \
+  -out /etc/ssl/private/root/csr/my-service.csr \
+  -reqexts req_server \
+  -subj "/CN=myservice.example.local"
 ```
 
 If you used a different file name for the private key, make sure it's reflected,
@@ -121,10 +121,10 @@ Sign the CSR:
 
 ```sh hl_lines="4 5"
 openssl ca -notext \
--extensions v3_server \
--config /etc/ssl/private/root/openssl.conf \
--in /etc/ssl/private/root/csr/my-service.csr \
--out /etc/ssl/private/root/certs/my-service.pem
+  -extensions v3_server \
+  -config /etc/ssl/private/root/openssl.conf \
+  -in /etc/ssl/private/root/csr/my-service.csr \
+  -out /etc/ssl/private/root/certs/my-service.pem
 ```
 
 Make sure the file names for the CSR and certificate are correct.
@@ -142,19 +142,19 @@ Copy the service's private key to the directory oyur service will use:
 
 ```sh
 cp /etc/ssl/private/root/private/my-service.pem \
-/etc/ssl/private/my-service/key.pem
+  /etc/ssl/private/my-service/key.pem
 ```
 
 The same can be done for the service's certificate and root CA certificate.
 
 ```sh
 cp /etc/ssl/private/root/certs/my-service.pem \
-/etc/ssl/private/my-service/cert.pem
+  /etc/ssl/private/my-service/cert.pem
 ```
 
 ```sh
 cp /etc/ssl/private/root/certs/cacert.pem \
-/etc/ssl/private/my-service/cacert.pem
+  /etc/ssl/private/my-service/cacert.pem
 ```
 
 If your service only takes a single certificate and key, the root CA certificate
@@ -162,7 +162,7 @@ will need to be appended to the service's certificate:
 
 ```sh
 cat /etc/ssl/private/my-servie/cacert.pem | \
-tee -a /etc/ssl/private/my-service/cert.pem >/dev/null
+  tee -a /etc/ssl/private/my-service/cert.pem >/dev/null
 ```
 
 If your service only takes a single file containing the whole chain, including
@@ -170,7 +170,7 @@ the private key, append the chained certificate above to the key file:
 
 ```sh
 cat /etc/ssl/private/my-service/cert.pem | \
-tee -a /etc/ssl/private/my-service/key.pem >/dev/null
+  tee -a /etc/ssl/private/my-service/key.pem >/dev/null
 ```
 
 [^1]: [https://letsencrypt.org/](https://letsencrypt.org/){target=_blank rel="nofollow noopener noreferrer"}
