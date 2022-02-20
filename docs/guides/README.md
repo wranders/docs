@@ -12,7 +12,9 @@ are written using that. -->
 (Windows Subsystem for Linux).
 
 [XCP-ng](./xcp-ng/) is a collection of things useful for running and managing
-[XCP-ng](https://xcp-ng.org/) servers.
+XCP-ng[^1] servers.
 
 Other stand-alone articles are just tidbits of information that I've found
 useful at one point or another.
+
+[^1]: [https://xcp-ng.org/](https://xcp-ng.org/){target=_blank rel="nofollow noopener noreferrer"}
