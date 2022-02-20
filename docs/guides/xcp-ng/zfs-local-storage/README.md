@@ -35,11 +35,11 @@ For XCP-ng versions <8:
 
 ```sh
 yum install --enable-repo="xcp-ng-extras" \
-blktap \
-vhd-tool \
-kmod-spl-4.4.0+10 \
-kmod-zfs-4.4.0+10 \
-zfs
+  blktap \
+  vhd-tool \
+  kmod-spl-4.4.0+10 \
+  kmod-zfs-4.4.0+10 \
+  zfs
 ```
 
 For XCP-ng version 8+:
@@ -80,8 +80,8 @@ Now create a mirrored pool named `tank` using the above drive locations:
 
 ```sh
 zpool create tank mirror \
-/dev/disk/by-id/ata-Samsung_SSD_860_EVO_1TB_S5BXXXXXXXXXX1N \
-/dev/disk/by-id/ata-Samsung_SSD_860_EVO_1TB_S5BXXXXXXXXXX2N
+  /dev/disk/by-id/ata-Samsung_SSD_860_EVO_1TB_S5BXXXXXXXXXX1N \
+  /dev/disk/by-id/ata-Samsung_SSD_860_EVO_1TB_S5BXXXXXXXXXX2N
 ```
 
 Now, create a dataset that will be the mount point for our local storage
