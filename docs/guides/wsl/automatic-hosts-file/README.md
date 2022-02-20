@@ -20,39 +20,8 @@ The suggested directory to place this is
 `%USERPROFILE%\Documents\PowerShell\Scripts` with the file name
 `updateHosts.ps1`.
 
-```ps1
-$hostname = "wsl.local"
-
-################################################################################
-
-$ifconfig = (wsl -- ip -4 addr show eth0 2> $null)
-$ipPattern = "((\d+\.?){4})"
-$ip = ([regex]"inet $ipPattern").Match($ifconfig).Groups[1].Value
-if (-not $ip) {
-    exit
-}
-Write-Host $ip
-$hostsPath = "$env:windir/system32/drivers/etc/hosts"
-$hosts = (Get-Content -Path $hostsPath -Raw -ErrorAction Ignore)
-if ($null -eq $hosts) {
-    $hosts = ""
-}
-$hosts = $hosts.Trim()
-$find = "$ipPattern\s+$hostname"
-$entry = "$ip $hostname"
-if ($hosts -match $find) {
-    $hosts = $hosts -replace $find, $entry
-} else {
-    $hosts = "$hosts`n$entry".Trim()
-}
-try {
-    $temp = "$hostsPath.new"
-    New-Item -Path $temp -ItemType File -Force | Out-Null
-    Set-Content -Path $temp $hosts
-    Move-Item -Path $temp -Destination $hostsPath -Force
-} catch {
-    Write-Error "cannot update wsl ip"
-}
+```powershell title="updateHosts.ps1"
+--8<-- "docs/guides/wsl/automatic-hosts-file/scripts/updateHosts.ps1"
 ```
 
 ## Task
@@ -67,52 +36,8 @@ change the `$scriptLocation` variable.
 
 This script can be copied and paste inside an elevated PowerShell terminal.
 
-```ps1
-$scriptLocation="$env:USERPROFILE\Documents\PowerShell\Scripts\updateHosts.ps1"
-
-################################################################################
-
-$trigger = cimclass MSFT_TaskEventTrigger root/Microsoft/Windows/TaskScheduler `
-    | New-CimInstance -ClientOnly
-
-$trigger.Enabled = $true
-
-$trigger.Subscription = @'
-<QueryList>
-  <Query Id="0" Path="System">
-    <Select Path="System">
-      *[System[Provider[@Name="Microsoft-Windows-Hyper-V-VmSwitch"] and EventID=102]]
-    </Select>
-  </Query>
-</QueryList>
-'@
-
-$trigger.Delay = "PT5S" # 5 Seconds to allow WSL some time to initialize
-
-$actionParams =  @{
-    Execute  = "powershell.exe"
-    Argument = "-WindowStyle hidden -File $scriptLocation"
-}
-$action    = New-ScheduledTaskAction @actionParams
-
-$principal = New-ScheduledTaskPrincipal `
-    -UserId "$env:USERDOMAIN\$env:USERNAME" `
-    -LogonType ServiceAccount `
-    -RunLevel Highest
-
-$settings  = New-ScheduledTaskSettingsSet
-
-$taskParams = @{
-    TaskName    = "WSL Set Hosts File IP"
-    Description = "Set WSL IP address in hosts file"
-    TaskPath    = "\Event Viewer Tasks\"
-    Action      = $action
-    Principal   = $principal
-    Settings    = $settings
-    Trigger     = $trigger
-}
-
-Register-ScheduledTask @taskParams
+```powershell title="createUpdateTask.ps1"
+--8<-- "docs/guides/wsl/automatic-hosts-file/scripts/createUpdateTask.ps1"
 ```
 
 ## Wrap-Up
