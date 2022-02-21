@@ -82,6 +82,7 @@ nav:
     - 'kb/ietf-rfc/README.md'
     - LDAP: 'kb/ietf-rfc/ldap/README.md'
   - Servers:
+    - 'kb/servers/README.md'
     - Dell R510: 'kb/servers/dell-r510/README.md'
     - Dell R610: 'kb/servers/dell-r610/README.md'
   - Interface Bit Rates: 'kb/interface-bit-rates/README.md'
