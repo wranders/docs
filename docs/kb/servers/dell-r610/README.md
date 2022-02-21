@@ -4,17 +4,18 @@
 
 ## General Information
 
-|                   |                           |
-| :-                | :-                        |
-| Form Factor       | 1U                        |
-| Chipset           | Intel 5520                |
-| CPU Socket        | 2x LGA 1366               |
-| CPU Compatability | Xeon 5500<br>Xeon 5600    |
-| RAM, Maximum      | 384 GB                    |
-| RAM, Speed        | DDR3 800-1333             |
-| RAM, Socket       | 12 (6/CPU)                |
-| RAM, Channels     | 2                         |
-| Storage           | 6x 2.5" SAS/SATA          |
+|                               |                                                                       |
+| :-                            | :-                                                                    |
+| Form Factor                   | 1U                                                                    |
+| Chipset                       | Intel 5520                                                            |
+| CPU Socket                    | 2x LGA 1366                                                           |
+| CPU Compatability             | Xeon 5500<br>Xeon 5600                                                |
+| RAM, Maximum Total Capacity   | 384 GB                                                                |
+| RAM, Maximum DIMM Capacity    | 16 GB                                                                 |
+| RAM, Speed                    | DDR3 800 (PC3 6400)<br>DDR3 1066 (PC3 8500)<br>DDR3 1333 (PC3 10600)  |
+| RAM, Socket                   | 12 (6/CPU)                                                            |
+| RAM, Channels                 | 2                                                                     |
+| Storage                       | 6x 2.5" SAS/SATA                                                      |
 
 ## Parts & Part Numbers
 
@@ -82,8 +83,12 @@
 | Cable Management Arm (CMA)        | NN006                                                                         |
 | Bezel                             | TY293 / FU741                                                                 |
 
+## Links
+
+- [Dell Support](https://www.dell.com/support/home/en-us/product-support/product/poweredge-r610/overview){target=_blank rel="nofollow noopener noreferrer"}
+
 ## Documents
 
-- [R610 Specifications](docs/r610-specs.pdf)
-- [R610 Technical Guide](docs/r610-tech-guide.pdf)
-- [R610 Owners Manual](docs/r610-owners-manual.pdf)
+- [R610 Specifications (March 2011)](docs/r610-specs.pdf){target=_blank rel="nofollow noopener noreferrer"}
+- [R610 Technical Guide (January 2011)](docs/r610-tech-guide.pdf){target=_blank rel="nofollow noopener noreferrer"}
+- [R610 Owners Manual (March 2013)](docs/r610-owners-manual.pdf){target=_blank rel="nofollow noopener noreferrer"}

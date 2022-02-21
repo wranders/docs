@@ -4,17 +4,18 @@
 
 ## General Information
 
-|                   |                                                                               |
-| :-                | :-                                                                            |
-| Form Factor       | 2U                                                                            |
-| Chipset           | Intel 5520                                                                    |
-| CPU Socket        | 2x LGA 1366                                                                   |
-| CPU Compatability | Xeon 5500<br>Xeon 5600                                                        |
-| RAM, Maximum      | 128 GB                                                                        |
-| RAM, Speed        | DDR3 800-1333                                                                 |
-| RAM, Socket       | 8 (4/CPU)                                                                     |
-| RAM, Channels     | 2                                                                             |
-| Storage           | 4x 3.5" SAS/SATA<br>8x 3.5" SAS/SATA<br>12x 3.5" SAS/SATA<br>2x 2.5" SAS/SATA |
+|                               |                                                                               |
+| :-                            | :-                                                                            |
+| Form Factor                   | 2U                                                                            |
+| Chipset                       | Intel 5520                                                                    |
+| CPU Socket                    | 2x LGA 1366                                                                   |
+| CPU Compatability             | Xeon 5500<br>Xeon 5600                                                        |
+| RAM, Maximum Total Capacity   | 128 GB                                                                        |
+| RAM, Maximum DIMM Capacity    | 16 GB                                                                         |
+| RAM, Speed                    | DDR3 800 (PC3 6400)<br>DDR3 1066 (PC3 8500)<br>DDR3 1333 (PC3 10600)          |
+| RAM, Socket                   | 8 (4/CPU)                                                                     |
+| RAM, Channels                 | 2                                                                             |
+| Storage                       | 4x 3.5" SAS/SATA<br>8x 3.5" SAS/SATA<br>12x 3.5" SAS/SATA<br>2x 2.5" SAS/SATA |
 
 ## Parts & Part Numbers
 
@@ -59,17 +60,17 @@
 
 ### RAID Controllers
 
-| Part            | Dell Part #                                           |
-| :-              | :-                                                    |
-| SAS 5/E 256MB   | DM479 / GP297 / UT568 / XM768                          |
-| SAS 6/iR        | YK838 / JW063 / CR679                                 |
-| PERC 6/i        | H726F / DX481 / T954J / WY335                         |
-| PERC S300       | Y159P                                                 |
-| PERC H200       | 3J8FW                                                 |
-| PERC H700 512MB | CNXVV / 1THG8 / H2R6M / K883J / W56W0 / R374M / XXFVX |
-| PREC H700 1GB   | HCR2Y                                                 |
-| PERC H800 512MB | 71N7N / 87V49 / D90PG / N743J / NCHRW / R1HPD         |
-| PERC H800 1GB   | 5KYFR / VVGYD                                         |
+| Part            | Dell Part #                                             |
+| :-              | :-                                                      |
+| SAS 5/E 256MB   | DM479 / GP297 / UT568 / XM768                           |
+| SAS 6/iR        | YK838 / JW063 / CR679                                   |
+| PERC 6/i        | H726F / DX481 / T954J / WY335                           |
+| PERC S300       | Y159P                                                   |
+| PERC H200       | 3J8FW                                                   |
+| PERC H700 512MB | CNXVV / 1THG8 / H2R6M / K883J / W56W0 / R374M / XXFVX   |
+| PREC H700 1GB   | HCR2Y                                                   |
+| PERC H800 512MB | 71N7N / 87V49 / D90PG / N743J / NCHRW / R1HPD           |
+| PERC H800 1GB   | 5KYFR / VVGYD                                           |
 
 ### Accessories
 
@@ -84,8 +85,12 @@
 | PCI Slotted Blank Cover   | DD463                         |
 | CPU Shroud                | 27DFW                         |
 
+## Links
+
+- [Dell Support](https://www.dell.com/support/home/en-us/product-support/product/poweredge-r510/overview){target=_blank rel="nofollow noopener noreferrer"}
+
 ## Documents
 
-- [R510 Specifications](docs/r510-specs.pdf)
-- [R510 Technical Guide](docs/r510-tech-guide.pdf)
-- [R510 Owners Manual](docs/r510-owners-manual.pdf)
+- [R510 Specifications (October 2012)](docs/r510-specs.pdf){target=_blank rel="nofollow noopener noreferrer"}
+- [R510 Technical Guide (May 2010)](docs/r510-tech-guide.pdf){target=_blank rel="nofollow noopener noreferrer"}
+- [R510 Owners Manual (November 2009)](docs/r510-owners-manual.pdf){target=_blank rel="nofollow noopener noreferrer"}
