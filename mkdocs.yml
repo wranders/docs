@@ -86,7 +86,7 @@ nav:
     - Dell R510: 'kb/servers/dell-r510/README.md'
     - Dell R610: 'kb/servers/dell-r610/README.md'
   - Interface Bit Rates: 'kb/interface-bit-rates/README.md'
-  - OpenSSL Index Format: 'kb/openssl-index-format/README.md'
+  - OpenSSL Index Format: 'kb/openssl-database-format/README.md'
   - Package-Buddy QR Code: 'kb/packagebuddy-qr-code/README.md'
 - Guides:
   - 'guides/README.md'
