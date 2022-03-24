@@ -16,19 +16,6 @@ init        = 0
 
 #############################################################
 
-[ req ]
-distinguished_name = req_ca_dn
-
-[ req_ca_dn ]
-countryName            = "US"
-0.domainComponent      = "codes"
-1.domainComponent      = "doubleu"
-organizationName       = "DoubleU Labs"
-organizationalUnitName = "DoubleU Root CA"
-commonName             = "DoubleU Root CA"
-
-#############################################################
-
 [ ca ]
 default_ca = root_ca
 

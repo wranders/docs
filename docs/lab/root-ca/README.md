@@ -46,24 +46,30 @@ other tools we need.
 
 ```sh
 sudo dnf install -y \
-datefudge \
-dateutils \
 yubikey-manager \
 yubico-piv-tool
 ```
 
-- `datefudge` is used to obscure the exact date and time the certificate was
-generated, thus denying some bits of information contributing to the overall
-entropy used to generate the key.
-- `dateutils` contains the tool `datediff`, which is used to calculate the exact
-number of days between two dates. Useful for long periods of time like the 20
-year validity of a Root Certificate.
 - `yubikey-manager` is used to reset, generate private keys, and
 copy the signed certificate to the Yubikey.
 - `yubico-piv-tool` is used to configure the management key, PIN, and PIN unlock
 key. This can be done from `yubikey-manager`, but changing the management key
 using that is obnoxious due to length of the default key, which must be provided
-to change it.
+to change it. It also provides `libykcs11`, which is used by OpenSSL to access
+the PIV portion of the Yubikey.
+
+!!! info
+    You might see tutorials using `datefudge` to mask the certificate start
+    date, which generally corresponds with the time it was created. This is
+    likely due to those tutorials using `openssl req -x509` to create the
+    private key and self signed certificate at the same time.
+
+    `req` does not have `-startdate` and `-enddate` flags like `ca` does, so
+    you need to trick OpenSSL using tools like `datefudge`.
+
+    Since the steps here use `req` to create a Certificate Signing Request (CSR)
+    and `ca` to sign it, `-startdate` and `-enddate` are available so we don't
+    need these tools.
 
 ## Prepare CA Storage
 
@@ -259,8 +265,11 @@ Way".
     ```sh
     ykman piv keys generate \
     -m $(cat KEY) -P $(cat PIN) \
-    -a ECCP384 9a -
+    -a ECCP384 9a - > /dev/null
     ```
+
+    The trailing hyphen (`-`) sends the public key to `stdout`. We don't need
+    it, so we're redirecting it to `/dev/null`.
 
     This is a bit risky since if something happens to the Yubikey, then I'll
     have to order a new one and redeploy the entire PKI. If you prefer to have a
@@ -327,18 +336,19 @@ Create the following three files:
 --8<-- "docs/lab/root-ca/openssl.cnf"
 ```
 
-```sh title="rootalias"
---8<-- "docs/lab/root-ca/rootalias"
+```sh title="activate"
+--8<-- "docs/lab/root-ca/activate"
 ```
 
-```sh title="norootalias"
---8<-- "docs/lab/root-ca/norootalias"
+```sh title="deactivate"
+--8<-- "docs/lab/root-ca/deactivate"
 ```
 
 The `ROOTCA` directory should look like this now:
 
 ```sh
 .
+├── activate
 ├── ca
 ├── certs
 ├── crl
@@ -347,55 +357,80 @@ The `ROOTCA` directory should look like this now:
 │   ├── root_ca.crt.srl
 │   ├── root_ca.db
 │   └── root_ca.db.attr
-├── norootalias
-├── openssl.cnf
-└── rootalias
+├── deactivate
+└── openssl.cnf
 ```
 
 ## Generate Root Certificate
 
-```sh
-source rootalias
-```
+Request the certificate. Ensure the `subj` complies with the policy set in
+`openssl.cnf`.
 
 ```sh
 openssl req -new \
--config openssl.cnf \
 -engine pkcs11 \
 -keyform engine \
 -key "pkcs11:id=%01;type=private" \
+-subj "/CN=DoubleU Root CA/O=DoubleU Labs/C=US/DC=doubleu/DC=codes" \
 -passin file:/run/media/$USER/YUBIROOTSEC/PIN \
 -out ca/root_ca.csr.pem
 ```
 
-```sh
-alias fudge="TZ=GMT datefudge -s '2022-01-01' $@"
-EXP=$(fudge date -d '20 years' '+%Y-%m-%s')
-DAYS=$(fudge datediff now $EXP)
-```
+Sign the CSR and pay attention to the `startdate` and `enddate`. It can be
+formatted in one of two ways:
+
+- `YYMMDDHHMMSSZ` (two digit year, eg. `220101000000Z`)
+- `YYYYMMDDHHMMSSZ` (four digit year, eg. `20220101000000Z`)
+
+Both formats must include seconds (`SS`) and the `Z` at the end, which denotes
+GMT / UTC / Zulu time.
 
 ```sh
-fudge rootca \
+openssl ca \
+-config openssl.cnf \
+-engine pkcs11 \
+-keyform engine \
 -selfsign \
 -notext \
 -passin file:/run/media/$USER/YUBIROOTSEC/PIN \
 -in ca/root_ca.csr.pem \
 -out ca/root_ca.csr.pem \
 -extensions root_ca_ext \
--days $DAYS
+-startdate 202201010000Z \
+-enddate 204201010000Z
 ```
+
+Import the signed certificate into the Yubikey. Make sure to use the same slot
+as the private key.
 
 ```sh
 ykman piv certificates import \
 -m $(cat /run/media/$USER/YUBIROOTSEC/KEY) \
 -P $(cat /run/media/$USER/YUBIROOTSEC/PIN) \
-9a \
-ca/root_ca.crt.pem
+9a ca/root_ca.crt.pem
 ```
 
+Show Yubikey PIV info to see the new certificate.
+
 ```sh
-ykman piv info
+$ ykman piv info
+PIN verison: 5.4.3
+PIN tries remaining: 3/3
+Management key algorithm: TDES
+CHUID:  [redacted (Card Holder Unique Identifier)]
+CCC:    No data available
+Slot 9a:
+        Algorithm:      ECCP384
+        Subject DN:     CN=DoubleU Root CA,O=DoubleU Labs,C=US,DC=doubleu,DC=codes
+        Issuer DN:      CN=DoubleU Root CA,O=DoubleU Labs,C=US,DC=doubleu,DC=codes
+        Serial:         123456789012345678901234567890123456789012345678
+        Fingerprint:    1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+        Not before:     2022-01-01 00:00:00
+        Not after:      2042-01-01 00:00:00
 ```
+
+Convert the PEM encoded certificate to DER since this is what's needed for the
+Authority Information Access (AIA) extension on certificates issued by the root.
 
 ```sh
 openssl x509 \
@@ -406,13 +441,47 @@ openssl x509 \
 
 ## Generate CRL
 
-```sh
-rootca -gencrl \
--passin file:/run/media/$USER/YUBIROOTSEC/PIN | \
-openssl crl -outform der -out crl/root_ca.crl
-```
+Certificate Revocation Lists (CRL) must be accessible by subordinate certificate
+authorities and their end entities. Mint the first one. It's mostly only
+consumed in DER format, so directly render it as such.
+
+=== "With `openssl`"
+
+    ```sh
+    openssl ca \
+    -config openssl.cnf \
+    -engine pkcs11 \
+    -keyform engine \
+    -gencrl \
+    -passin file:/run/media/$USER/YUBIROOTSEC/PIN | \
+    openssl crl -outform der -out crl/root_ca.crl
+    ```
+
+=== "With `rootca` alias"
+
+    ```sh
+    rootca -gencrl \
+    -passin file:/run/media/$USER/YUBIROOTSEC/PIN | \
+    openssl crl -outform der -out crl/root_ca.crl
+    ```
+
+`openssl.cnf` sets the default expiration date at 180 days, which is roughly
+six months. A good practice is to issue a new CRL about $\frac{2}{3}$ through
+the validity period, so effectivly every 120 days, or roughly four months.
 
 ## Signing Issuing/Intermediate CA
+
+We aren't signing anything right now, but this is how we'll sign issuing CA CSRs
+when the time comes.
+
+```sh
+source /run/media/$USER/ROOTCA/activate
+```
+
+`activate` sets an environment variable containing the absolute path of the root
+CA directory, which is used by the `rootca` alias and `openssl.cnf`. This means
+`rootca` can be used from any directory, so you can work with subordinate CSRs
+without having work directly in the `ROOTCA` directory.
 
 ```sh
 rootca \
@@ -431,24 +500,58 @@ Make sure the Distinguished Name in the request matches the policy in
 - `organizationName` / `O` must be `DoubleU Labs`
 - `commonName` / `CN` must be set
 
+```sh
+source /run/media/$USER/deactivate
+```
+
+`deactivate` removes the `rootca` alias and the environment variable that stores
+the absolute path of the CA.
+
 ## Sync Backup USB
 
-## Cleanup
+Insert the second USB drive and format it the same as the first, including
+identical partition labels. Be sure to also do the remove and reinsert steps to
+mount the secondary in the current userspace.
+
+Partitions on the secondary drive will be mounted in directories with an
+incremented digit, (`ROOTCA1` and `YUBIROOTSEC1`).
 
 ```sh
-source norootalias
+rsync -a \
+/run/media/$USER/ROOTCA/ \
+/run/media/$USER/ROOTCA1
 ```
+
+```sh
+rsync -a \
+/run/media/$USER/YUBIROOTSEC/ \
+/run/media/$USER/YUBIROOTSEC1
+```
+
+The trailing slash on the source path is critical or else the parent directory
+will be copied instead of only the directory contents.
+
+## Cleanup
 
 Unmount the USB partitions from Gnome Files, or with the following:
 
 ```sh
-umount /run/media/$USER/{ROOTCA,YUBIROOTSEC}
+umount /run/media/$USER/{ROOTCA,ROOTCA1,YUBIROOTSEC,YUBIROOTSEC1}
 ```
 
 ```sh
 sudo cryptsetup close \
 $(lsblk -o NAME /dev/sdb | grep -oe "luks.*")
 ```
+
+## Publish CRT and CRL
+
+Copy `ca/root_ca.crt` and `crl/root_ca.crl` to the distribution point you set up
+and can receive requests on the URI specified by `authorityInfoAccess` and
+`crlDistributionPoints`. Make sure the file name matches the URI as well.
+
+I'm using a statically built site on Github Pages to serve this purpose:
+[http://ca.doubleu.codes/](http://ca.doubleu.codes/){target=_blank rel="nofollow noopener noreferrer"}
 
 [^1]: [https://www.openssl.org/](https://www.openssl.org/){target=_blank rel="nofollow noopener noreferrer"}
 [^2]: [https://smallstep.com/certificates/](https://smallstep.com/certificates/){target=_blank rel="nofollow noopener noreferrer"}

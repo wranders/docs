@@ -48,6 +48,8 @@ markdown_extensions:
 - admonition
 - attr_list
 - footnotes
+- pymdownx.arithmatex:
+    generic: true
 - pymdownx.betterem:
     smart_enable: all
 - pymdownx.caret
@@ -68,6 +70,11 @@ markdown_extensions:
 - tables
 - toc:
     permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://polyfill.io/v3/polyfill.min.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 plugins:
 - git-revision-date-localized:
