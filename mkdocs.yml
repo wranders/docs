@@ -104,4 +104,4 @@ nav:
   - OpenSSL Request ADCS: 'guides/openssl-req-adcs/README.md'
 - Lab:
   - 'lab/README.md'
-  - '01 - Root CA': 'lab/01-root-ca/README.md'
+  - 'Root CA': 'lab/root-ca/README.md'

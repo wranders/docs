@@ -17,12 +17,8 @@ init        = 0
 ################################################################################
 
 [ req ]
-default_md         = sha256
-utf8               = yes
-string_mask        = utf8only
 prompt             = no
 distinguished_name = req_ca_dn
-req_extensions     = req_ca_ext
 
 [ req_ca_dn ]
 countryName            = "US"
@@ -31,11 +27,6 @@ countryName            = "US"
 organizationName       = "DoubleU Labs"
 organizationalUnitName = "DoubleU Root CA"
 commonName             = "DoubleU Root CA"
-
-[ req_ca_ext ]
-subjectKeyIdentifier = hash
-basicConstraints     = critical, CA:true, pathlen:1
-keyUsage             = critical, keyCertSign, cRLSign
 
 ################################################################################
 

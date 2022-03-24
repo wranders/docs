@@ -312,15 +312,15 @@ touch db/root_ca.db{,.attr}
 Create the following three files:
 
 ```ini title="openssl.cnf"
---8<-- "docs/lab/01-root-ca/openssl.cnf"
+--8<-- "docs/lab/root-ca/openssl.cnf"
 ```
 
 ```sh title="rootalias"
---8<-- "docs/lab/01-root-ca/rootalias"
+--8<-- "docs/lab/root-ca/rootalias"
 ```
 
 ```sh title="norootalias"
---8<-- "docs/lab/01-root-ca/norootalias"
+--8<-- "docs/lab/root-ca/norootalias"
 ```
 
 The `ROOTCA` directory should look like this now:
