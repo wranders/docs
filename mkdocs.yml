@@ -102,3 +102,6 @@ nav:
   - Kickstart Install: 'guides/kickstart-install/README.md'
   - Self-Signed Certificate with Root: 'guides/self-signed-certificate-with-root/README.md'
   - OpenSSL Request ADCS: 'guides/openssl-req-adcs/README.md'
+- Lab:
+  - 'lab/README.md'
+  - '01 - Root CA': 'lab/01-root-ca/README.md'

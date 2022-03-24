@@ -1,0 +1,6 @@
+export ROOTCA_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
+
+alias rootca="openssl ca \
+-config ${ROOTCA_DIR}/openssl.cnf \
+-engine pkcs11 \
+-keyform engine $@"
