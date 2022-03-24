@@ -14,10 +14,9 @@ engine_id   = pkcs11
 MODULE_PATH = /usr/lib64/libykcs11.so.2
 init        = 0
 
-################################################################################
+#############################################################
 
 [ req ]
-prompt             = no
 distinguished_name = req_ca_dn
 
 [ req_ca_dn ]
@@ -28,7 +27,7 @@ organizationName       = "DoubleU Labs"
 organizationalUnitName = "DoubleU Root CA"
 commonName             = "DoubleU Root CA"
 
-################################################################################
+#############################################################
 
 [ ca ]
 default_ca = root_ca
@@ -64,7 +63,7 @@ commonName             = supplied
 [ crl_ext ]
 authorityKeyIdentifier = keyid:always
 
-################################################################################
+#############################################################
 
 [ root_ca_ext ]
 keyUsage               = critical, keyCertSign, cRLSign

@@ -45,7 +45,11 @@ OpenSSL and cryptsetup are already installed on Fedora 35, but there is a few
 other tools we need.
 
 ```sh
-sudo dnf install -y datefudge dateutils yubikey-manager yubico-piv-tool
+sudo dnf install -y \
+datefudge \
+dateutils \
+yubikey-manager \
+yubico-piv-tool
 ```
 
 - `datefudge` is used to obscure the exact date and time the certificate was
@@ -87,7 +91,8 @@ the interactive prompt. Single quotes without spaces (`''`) denote an ++enter++
 keystroke.
 
 ```sh
-printf '%s\n' g n '' '' +64M n '' '' '' w | sudo fdisk /dev/sdb
+printf '%s\n' g n '' '' +64M n '' '' '' w | \
+sudo fdisk /dev/sdb
 ```
 
 The commands equate to:
@@ -146,7 +151,8 @@ anything fancy, and a bit of added "security" of not being able to set execute
 bits.
 
 ```sh
-sudo mkfs.vfat -v -F 32 -n YUBIROOTSEC /dev/mapper/yubirootsec
+sudo mkfs.vfat -v \
+-F 32 -n YUBIROOTSEC /dev/mapper/yubirootsec
 ```
 
 Finally, close the device. We're going to remove and reinsert it after
@@ -232,11 +238,13 @@ yubico-piv-tool -a set-mgm-key -n $(cat KEY)
 ```
 
 ```sh
-yubico-piv-tool -a change-pin -k $(cat KEY) -P 123456 -N $(cat PIN)
+yubico-piv-tool -k $(cat KEY) \
+-a change-pin -P 123456 -N $(cat PIN)
 ```
 
 ```sh
-yubico-piv-tool -a change-puk -k $(cat KEY) -P 12345678 -N $(cat PUK)
+yubico-piv-tool -k $(cat KEY) \
+-a change-puk -P 12345678 -N $(cat PUK)
 ```
 
 ## Generate Root CA Key
@@ -249,7 +257,9 @@ Way".
     outside world.
 
     ```sh
-    ykman piv keys generate -a ECCP384 -m $(cat KEY) -P $(cat PIN) 9a -
+    ykman piv keys generate \
+    -m $(cat KEY) -P $(cat PIN) \
+    -a ECCP384 9a -
     ```
 
     This is a bit risky since if something happens to the Yubikey, then I'll
@@ -272,7 +282,9 @@ Way".
     Import the key to the Yubikey.
 
     ```sh
-    ykman piv keys import -m $(cat KEY) -P $(cat PIN) 9a root_ca.key.pem
+    ykman piv keys import \
+    -m $(cat KEY) -P $(cat PIN) \
+    9a root_ca.key.pem
     ```
 
 ## Setup CA Directory
@@ -386,13 +398,17 @@ ykman piv info
 ```
 
 ```sh
-openssl x509 -in ca/root_ca.crt.pem -out ca/root_ca.crt -outform der
+openssl x509 \
+-in ca/root_ca.crt.pem \
+-out ca/root_ca.crt \
+-outform der
 ```
 
 ## Generate CRL
 
 ```sh
-rootca -gencrl -passin file:/run/media/$USER/YUBIROOTSEC/PIN | \
+rootca -gencrl \
+-passin file:/run/media/$USER/YUBIROOTSEC/PIN | \
 openssl crl -outform der -out crl/root_ca.crl
 ```
 
@@ -430,7 +446,8 @@ umount /run/media/$USER/{ROOTCA,YUBIROOTSEC}
 ```
 
 ```sh
-sudo cryptsetup close $(lsblk -o NAME /dev/sdb | grep -oe "luks.*")
+sudo cryptsetup close \
+$(lsblk -o NAME /dev/sdb | grep -oe "luks.*")
 ```
 
 [^1]: [https://www.openssl.org/](https://www.openssl.org/){target=_blank rel="nofollow noopener noreferrer"}
