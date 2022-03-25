@@ -97,9 +97,6 @@ nav:
   - Package-Buddy QR Code: 'kb/packagebuddy-qr-code/README.md'
 - Guides:
   - 'guides/README.md'
-  # - Services:
-  #   - 'guides/services/README.md'
-  #   - Xen-Orchestra: 'guides/services/xen-orchestra/README.md'
   - WSL:
     - 'guides/wsl/README.md'
     - Automatic Hosts File: 'guides/wsl/automatic-hosts-file/README.md'
