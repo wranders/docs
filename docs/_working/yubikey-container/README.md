@@ -80,12 +80,13 @@ $ ls -l /dev/yubikey
 lrwxrwxrwx. 1 root root 15 Jan 01 00:00 /dev/yubikey -> bus/usb/001/004
 ```
 
-Finally, check the user and group of the USB bus device to make sure it's owned
-but the user you plan to execute the container as.
+Finally, check the user and group to make sure it's owned by the user you plan
+to execute the container as. Note the uppercase `L` flag, which dereferences the
+link and shows the end file status.
 
 ```sh
-$ ls -l /dev/yubikey
-crw-rw----. 1 core core 189, Jan 22 00:00 /dev/bus/usb/001/004
+$ ls -lL /dev/yubikey
+crw-rw----. 1 core core 189, Jan 01 00:00 /dev/yubikey
 ```
 
 ### FCOS Butane
