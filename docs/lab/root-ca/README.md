@@ -466,7 +466,7 @@ consumed in DER format, so directly render it as such.
     ```
 
 `openssl.cnf` sets the default expiration date at 180 days, which is roughly
-six months. A good practice is to issue a new CRL about $\frac{2}{3}$ through
+six months. A good practice is to issue a new CRL about 2/3 through
 the validity period, so effectivly every 120 days, or roughly four months.
 
 ## Signing Issuing/Intermediate CA
