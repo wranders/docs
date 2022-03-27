@@ -13,40 +13,40 @@ containers if active.
 Enabling or disabling USB interfaces will change the `idProduct`.
 
 ??? info "Yubikey Product Code Table"
-    | YubiKey Series             | USB Interfaces  | `idProduct` | iProduct String        |
-    | :-                         | :-              | :-          | :-                     |
-    | YubiKey Gen 1              | OTP             | `0010`      | N/A                    |
-    | YubiKey Gen 2              | OTP             | `0010`      | N/A                    |
-    | YubiKey NEO                | OTP             | `0110`      | YubiKey OTP            |
-    | YubiKey NEO                | FIDO            | `0111`      | YubiKey FIDO           |
-    | YubiKey NEO                | CCID            | `0112`      | YubiKey CCID           |
-    | YubiKey NEO                | OTP, FIDO       | `0113`      | YubiKey OTP+FIDO       |
-    | YubiKey NEO                | OTP, CCID       | `0114`      | YubiKey OTP+CCID       |
-    | YubiKey NEO                | FIDO, CCID      | `0115`      | YubiKey FIDO+CCID      |
-    | YubiKey NEO                | OTP, FIDO, CCID | `0116`      | YubiKey OTP+FIDO+CCID  |
-    | YubiKey 4                  | OTP             | `0401`      | YubiKey OTP            |
-    | YubiKey 4                  | FIDO            | `0402`      | YubiKey FIDO           |
-    | YubiKey 4                  | CCID            | `0404`      | YubiKey CCID           |
-    | YubiKey 4                  | OTP, FIDO       | `0403`      | YubiKey OTP+FIDO       |
-    | YubiKey 4                  | OTP, CCID       | `0405`      | YubiKey OTP+CCID       |
-    | YubiKey 4                  | FIDO, CCID      | `0406`      | YubiKey FIDO+CCID      |
-    | YubiKey 4                  | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
-    | YubiKey FIPS (4 Series) \* | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
-    | YubiKey 5                  | OTP             | `0401`      | YubiKey OTP            |
-    | YubiKey 5                  | FIDO            | `0402`      | YubiKey FIDO           |
-    | YubiKey 5                  | CCID            | `0404`      | YubiKey CCID           |
-    | YubiKey 5                  | OTP, FIDO       | `0403`      | YubiKey OTP+FIDO       |
-    | YubiKey 5                  | OTP, CCID       | `0405`      | YubiKey OTP+CCID       |
-    | YubiKey 5                  | FIDO, CCID      | `0406`      | YubiKey FIDO+CCID      |
-    | YubiKey 5                  | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
-    | YubiKey 5 FIPS Series \*   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
-    | Security Key Series        | FIDO            | `0120`      | Security Key by Yubico |
+    | YubiKey Series                              | USB Interfaces  | `idProduct` | iProduct String        |
+    | :-                                          | :-              | :-          | :-                     |
+    | YubiKey Gen 1                               | OTP             | `0010`      | N/A                    |
+    | YubiKey Gen 2                               | OTP             | `0010`      | N/A                    |
+    | YubiKey NEO                                 | OTP             | `0110`      | YubiKey OTP            |
+    | YubiKey NEO                                 | FIDO            | `0111`      | YubiKey FIDO           |
+    | YubiKey NEO                                 | CCID            | `0112`      | YubiKey CCID           |
+    | YubiKey NEO                                 | OTP, FIDO       | `0113`      | YubiKey OTP+FIDO       |
+    | YubiKey NEO                                 | OTP, CCID       | `0114`      | YubiKey OTP+CCID       |
+    | YubiKey NEO                                 | FIDO, CCID      | `0115`      | YubiKey FIDO+CCID      |
+    | YubiKey NEO                                 | OTP, FIDO, CCID | `0116`      | YubiKey OTP+FIDO+CCID  |
+    | YubiKey 4                                   | OTP             | `0401`      | YubiKey OTP            |
+    | YubiKey 4                                   | FIDO            | `0402`      | YubiKey FIDO           |
+    | YubiKey 4                                   | CCID            | `0404`      | YubiKey CCID           |
+    | YubiKey 4                                   | OTP, FIDO       | `0403`      | YubiKey OTP+FIDO       |
+    | YubiKey 4                                   | OTP, CCID       | `0405`      | YubiKey OTP+CCID       |
+    | YubiKey 4                                   | FIDO, CCID      | `0406`      | YubiKey FIDO+CCID      |
+    | YubiKey 4                                   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+    | YubiKey FIPS (4 Series) <sup>&dagger;</sup> | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+    | YubiKey 5                                   | OTP             | `0401`      | YubiKey OTP            |
+    | YubiKey 5                                   | FIDO            | `0402`      | YubiKey FIDO           |
+    | YubiKey 5                                   | CCID            | `0404`      | YubiKey CCID           |
+    | YubiKey 5                                   | OTP, FIDO       | `0403`      | YubiKey OTP+FIDO       |
+    | YubiKey 5                                   | OTP, CCID       | `0405`      | YubiKey OTP+CCID       |
+    | YubiKey 5                                   | FIDO, CCID      | `0406`      | YubiKey FIDO+CCID      |
+    | YubiKey 5                                   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+    | YubiKey 5 FIPS Series <sup>&dagger;</sup>   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+    | Security Key Series                         | FIDO            | `0120`      | Security Key by Yubico |
 
-    **\*** The YubiKey FIPS (4 Series) and YubiKey 5 FIPS Series devices, when
+    &dagger; The YubiKey FIPS (4 Series) and YubiKey 5 FIPS Series devices, when
     deployed in a FIPS-approved mode, will have all USB interfaces enabled.
     Should an exemption be obtained to deploy these devices with some interfaces
-    disabled, the PID and iProduct values will be identical to the YubiKey 4/5
-    Series.
+    disabled, the `idProduct` and iProduct values will be identical to the
+    YubiKey 4 / 5 Series.
 
     Source: [Yubico](https://support.yubico.com/hc/en-us/articles/360016614920-YubiKey-USB-ID-Values){target=_blank rel="nofollow noopener noreferrer"}
 
