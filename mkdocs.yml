@@ -78,6 +78,9 @@ nav:
 - Welcome: 'README.md'
 - Knowledge Base:
   - 'kb/README.md'
+  - CoreOS:
+    - 'kb/coreos/README.md'
+    - sshd Policy: 'kb/coreos/sshd-policy/README.md'
   - IETF RFC:
     - 'kb/ietf-rfc/README.md'
     - LDAP: 'kb/ietf-rfc/ldap/README.md'

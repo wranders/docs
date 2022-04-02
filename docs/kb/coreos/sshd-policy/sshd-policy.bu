@@ -1,0 +1,76 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Relativ-IT/Butane-Schemas/Release/Butane-Schema.json
+variant: fcos
+version: 1.4.0
+storage:
+  files:
+  - path: /etc/ssh/sshd_config.d/10_host-keys.conf
+    # Use only RSA and Ed25519 host keys.
+    # Explicitly exclude ECDSA as it can be vulnerable if weak RNG or low
+    # entropy was used to generate keys.
+    mode: 0644
+    contents:
+      inline: |
+        HostKey /etc/ssh/ssh_host_rsa_key
+        HostKey /etc/ssh/ssh_host_ed25519_key
+  - path: /etc/ssh/sshd_config.d/10_crypto-policy.conf
+    # The crypto-policy is defined like this instead of using a 'real'
+    # crypto-policy because Fedora CoreOS does not ship with the
+    # 'update-crypto-policies' tools, and including it depends on Python.
+    # The default policy is loaded by '/etc/ssh/sshd_config.d/50-redhat.conf'
+    # from '/etc/crypto-policies/back-ends/opensshserver.config'.
+    # Loading the these policies earlier than that ensures that the duplicate
+    # options defined in those policies are ignored.
+    mode: 0644
+    contents:
+      inline: |
+        Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+        MACs hmac-sha2-256-etm@openssh.com,hmac-sha2-512-etm@openssh.com,umac-128-etm@openssh.com
+        KexAlgorithms curve25519-sha256,curve25519-sha256@libssh.org,diffie-hellman-group16-sha512,diffie-hellman-group18-sha512,diffie-hellman-group-exchange-sha256
+        HostKeyAlgorithms ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512
+        PubkeyAcceptedKeyTypes ssh-ed25519,ssh-ed25519-cert-v01@openssh.com,rsa-sha2-256,rsa-sha2-512
+systemd:
+  units:
+  - name: sshd-moduli.service
+    # Mitigation for the LOGJAM attack. Moduli with lengths less than 2048 are
+    # removed. Default moduli lengths are 2047, 3071, 4095, 6143, 7678, and
+    # 8191. Instead of regenerating (which takes a long time), truncate to the
+    # next smallest uneffected (3071).
+    enabled: true
+    contents: |
+      [Unit]
+      After=coreos-ignition-firstboot-complete.service
+      Before=sshd.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/bash -c "/usr/bin/awk '$5 >= 3071' /etc/ssh/moduli > /etc/ssh/moduli.safe"
+      ExecStartPost=/usr/bin/mv -f /etc/ssh/moduli.safe /etc/ssh/moduli
+
+      [Install]
+      RequiredBy=multi-user.target
+  - name: sshd-disable-default-host-keys.service
+    # As of Fedora CoreOS 35, HostKeys are commented out by default, but just in
+    # case that changes in the future, ensure they are disabled in 'sshd_config'
+    # so that the only HostKey options are loaded from the file defined above at
+    # '/etc/ssh/sshd_config/10_host-keys.conf'.
+    enabled: true
+    contents: |
+      [Unit]
+      After=coreos-ignition-firstboot-complete.service
+      Before=sshd.service
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/bin/sed -i 's/^HostKey\(.*\)/#HostKey\1/g' /etc/ssh/sshd_config
+
+      [Install]
+      RequiredBy=multi-user.target
+  - name: sshd-keygen@ecdsa.service
+    # Disable ECDSA host keys from generating
+    # tl;dr It's spooky and possibly glows in the dark
+    #
+    # ECDSA has known vulnerabilities as explained above, but also has magic
+    # seed numbers that have never been explained, leading many to believe that
+    # it's backdoored by the NSA. Not much you can do if a nation state is in
+    # your threat model, but why make it easy?
+    mask: true
