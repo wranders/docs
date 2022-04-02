@@ -22,7 +22,7 @@ The suggested directory to place this is
 `updateHosts.ps1`.
 
 ```powershell title="updateHosts.ps1"
---8<-- "docs/guides/wsl/automatic-hosts-file/scripts/updateHosts.ps1"
+--8<-- "docs/guides/wsl/automatic-hosts-file/updateHosts.ps1"
 ```
 
 ## Task
@@ -38,7 +38,7 @@ location, change the `#!powershell $scriptLocation` variable.
 This script can be copied and paste inside an elevated PowerShell terminal.
 
 ```powershell title="createUpdateTask.ps1"
---8<-- "docs/guides/wsl/automatic-hosts-file/scripts/createUpdateTask.ps1"
+--8<-- "docs/guides/wsl/automatic-hosts-file/createUpdateTask.ps1"
 ```
 
 !!! info "Trigger Delay Format"
