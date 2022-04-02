@@ -1,0 +1,7 @@
+variant: fcos
+version: 1.4.0
+passwd:
+  users:
+  - name: core
+    ssh_authorized_keys:
+    - "$(cat ssh/id_ed25519_builder.pub)"

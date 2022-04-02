@@ -1,0 +1,24 @@
+storage:
+  directories:
+  - path: /home/core/.config
+    user:
+      name: core
+    group:
+      name: core
+  - path: /home/core/.config/systemd
+    user:
+      name: core
+    group:
+      name: core
+  - path: /home/core/.config/systemd/user
+    user:
+      name: core
+    group:
+      name: core
+  links:
+  - path: /home/core/.config/systemd/user/sockets.target.wants/podman.socket
+    target: /usr/lib/systemd/user/podman.sock
+    user:
+      name: core
+    group:
+      name: core

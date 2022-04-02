@@ -1,0 +1,14 @@
+storage:
+  disks:
+  - device: /dev/sda
+    wipe_table: true
+    partitions:
+    - number: 1
+      wipe_partition_entry: true
+      label: var
+  filesystems:
+  - path: /var
+    device: /dev/disk/by-partlabel/var
+    format: xfs
+    wipe_filesystem: true
+    with_mount: true
