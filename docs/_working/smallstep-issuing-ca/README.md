@@ -40,7 +40,7 @@ openssl genpkey \
 -algorithm ec \
 -pkeyopt ec_paramgen_curve:P-384 \
 -pkeyopt ec_param_enc:named_curve | \
-openssl ex -aes256 \
+openssl ec -aes256 \
 -passout file:password.txt \
 -out secrets/intermediate_ca_key
 ```
