@@ -4,8 +4,9 @@ Developing with WSL is handy, but can get tricky when you need to access it from
 the Windows Host, such as accessing a web server.
 
 This task will watch the Event Viewer for when Hyper-V loads network drivers and
-run the script. The IPv4 address of the `eth0` interface will then be added to
-the Windows `hosts` file at `wsl.local` (or whatever name you choose).
+run the `updateHosts.ps1` script. The IPv4 address of the `eth0` interface will
+then be added to the Windows `hosts` file at `wsl.local` (or whatever name you
+choose).
 
 ## Script
 
