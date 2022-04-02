@@ -336,9 +336,11 @@ Create the following three files:
 --8<-- "docs/lab/root-ca/openssl.cnf"
 ```
 
+<!--email_off-->
 ```sh title="activate"
 --8<-- "docs/lab/root-ca/activate"
 ```
+<!--/email_off-->
 
 ```sh title="deactivate"
 --8<-- "docs/lab/root-ca/deactivate"

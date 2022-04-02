@@ -27,8 +27,10 @@ the sum file.
 
 ## Policy Butane Format
 
+<!--email_off-->
 ```yaml
 --8<-- "docs/kb/coreos/sshd-policy/sshd-policy.bu"
 ```
+<!--/email_off-->
 
 [^1]: [https://github.com/jtesta/ssh-audit](https://github.com/jtesta/ssh-audit){target=_blank rel="nofollow noopener noreferrer"}
