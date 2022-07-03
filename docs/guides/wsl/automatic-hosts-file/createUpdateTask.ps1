@@ -21,7 +21,7 @@ $trigger.Delay = "PT5S" # 5 Seconds to allow WSL some time to initialize
 
 $actionParams =  @{
     Execute  = "powershell.exe"
-    Argument = "-WindowStyle hidden -File $scriptLocation"
+    Argument = "-WindowStyle hidden -ExecutionPolicy ByPass -File $scriptLocation"
 }
 $action    = New-ScheduledTaskAction @actionParams
 
