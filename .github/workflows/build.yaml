@@ -24,4 +24,20 @@ jobs:
     - name: Build and Publish Documentation
       run: |
         mkdocs --version
-        mkdocs gh-deploy --force
+        mkdocs build
+    - name: Upload Artifact
+      uses: actions/upload-pages-artifact@v1
+      with:
+        path: site/
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v1
