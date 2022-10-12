@@ -4,7 +4,7 @@ name: build
 on:
   push:
     branches:
-      - src
+      - master
 jobs:
   build:
     name: Build and Publish
