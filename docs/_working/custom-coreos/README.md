@@ -23,7 +23,7 @@ for Fedora CoreOS.
 
 ```sh
 cat << EOF > builder.bu
---8<-- "docs/lab/custom-coreos/builder.bu.d/01.passwd.bu"
+--8<-- "docs/_working/custom-coreos/builder.bu.d/01.passwd.bu"
 EOF
 ```
 
@@ -32,7 +32,7 @@ socket. This is what the CoreOS Assembler will connect to to run the build job.
 
 ```sh
 cat << EOF >> builder.bu
---8<-- "docs/lab/custom-coreos/builder.bu.d/02.podman.sock.bu"
+--8<-- "docs/_working/custom-coreos/builder.bu.d/02.podman.sock.bu"
 EOF
 ```
 
@@ -42,7 +42,7 @@ take a couple hours.
 
 ```sh
 cat << EOF | sed 1d >> builder.bu
---8<-- "docs/lab/custom-coreos/builder.bu.d/03.disks.bu"
+--8<-- "docs/_working/custom-coreos/builder.bu.d/03.disks.bu"
 EOF
 ```
 
