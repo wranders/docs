@@ -8,7 +8,7 @@
                 "command": "bash",
                 "args": [
                     "-c",
-                    "sudo podman build -t localhost/docs --no-cache -f $(wslpath ''${workspaceFolder}'')/Dockerfile"
+                    "podman build -t localhost/docs --no-cache -f $(wslpath ''${workspaceFolder}'')/Dockerfile"
                 ]
             },
             "linux": {
@@ -32,7 +32,7 @@
                 "command": "bash",
                 "args": [
                     "-c",
-                    "sudo podman run --rm -it -v $(wslpath ''${workspaceFolder}''):/docs -p 8000:8000 localhost/docs"
+                    "podman run --rm -it -v $(wslpath ''${workspaceFolder}''):/docs -p 8000:8000 localhost/docs"
                 ]
             },
             "linux": {
