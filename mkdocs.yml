@@ -6,7 +6,7 @@ site_description: Documentation
 site_author: W Anders
 repo_name: wranders/docs
 repo_url: https://github.com/wranders/docs/
-edit_uri: edit/src/docs
+edit_uri: edit/master/docs
 copyright: 'Copyright &copy; 2018-2022 W Anders'
 remote_branch: master
 
