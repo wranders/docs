@@ -16,8 +16,8 @@ For example, to request a certificate using the `WebServices` template, use:
 
 Edit the following request template:
 
-```ini title="myservice.cnf"
---8<-- "docs/guides/openssl-req-adcs/config/myservice.example.com.conf"
+```ini title="service.conf"
+--8<-- "docs/guides/openssl-req-adcs/config/service.conf"
 ```
 
 Then create your private key and CSR with the following command:
@@ -30,7 +30,7 @@ Then create your private key and CSR with the following command:
     openssl req -new -newkey rsa -nodes \
         -keyout service.key \
         -out service.csr \
-        -config service.cnf
+        -config service.conf
     ```
 
     !!! example "Or, to specify the bit length:"
@@ -39,7 +39,7 @@ Then create your private key and CSR with the following command:
         openssl req -new -newkey rsa:3072 -nodes \
             -keyout service.key \
             -out service.csr \
-            -config service.cnf
+            -config service.conf
         ```
 
 === "EC"
@@ -48,7 +48,7 @@ Then create your private key and CSR with the following command:
     openssl req -new -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes \
         -keyout service.key \
         -out service.csr \
-        -config service.cnf
+        -config service.conf
     ```
 
 <!-- markdownlint-enable MD046 -->
