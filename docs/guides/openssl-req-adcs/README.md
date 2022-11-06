@@ -16,18 +16,42 @@ For example, to request a certificate using the `WebServices` template, use:
 
 Edit the following request template:
 
-```ini title="myservice.example.com.cnf"
+```ini title="myservice.cnf"
 --8<-- "docs/guides/openssl-req-adcs/config/myservice.example.com.conf"
 ```
 
 Then create your private key and CSR with the following command:
 
-```sh
-openssl req -new -nodes \
-  -keyout service.key \
-  -out service.csr \
-  -config myservice.example.com.cnf
-```
+<!-- markdownlint-disable MD046 -->
+
+=== "RSA"
+
+    ```sh
+    openssl req -new -newkey rsa -nodes \
+        -keyout service.key \
+        -out service.csr \
+        -config service.cnf
+    ```
+
+    !!! example "Or, to specify the bit length:"
+
+        ```sh
+        openssl req -new -newkey rsa:3072 -nodes \
+            -keyout service.key \
+            -out service.csr \
+            -config service.cnf
+        ```
+
+=== "EC"
+
+    ```sh
+    openssl req -new -newkey ec -pkeyopt ec_paramgen_curve:P-256 -nodes \
+        -keyout service.key \
+        -out service.csr \
+        -config service.cnf
+    ```
+
+<!-- markdownlint-enable MD046 -->
 
 Verify the requst using:
 
@@ -39,7 +63,7 @@ openssl req -noout -text -in service.csr
 Certificate Request:
     Data:
         Version: 1 (0x0)
-        Subject: C = US, ST = Texas, L = San Antonio, O = Some Organization, OU = Some Section, CN = myservice.example.com
+        Subject: CN = myservice.example.com
         Subject Public Key Info:
             Public Key Algorithm: rsaEncryption
                 RSA Public-Key: (2048 bit)
@@ -65,12 +89,6 @@ Certificate Request:
                 Exponent: 65537 (0x10001)
         Attributes:
         Requested Extensions:
-            X509v3 Basic Constraints:
-                CA:FALSE
-            X509v3 Key Usage: critical
-                Digital Signature, Key Encipherment
-            X509v3 Extended Key Usage:
-                TLS Web Server Authentication
             X509v3 Subject Alternative Name:
                 DNS:myservice.example.com
             1.3.6.1.4.1.311.20.2:
