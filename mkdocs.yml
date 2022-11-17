@@ -90,6 +90,7 @@ nav:
   - Interface Bit Rates: 'kb/interface-bit-rates/README.md'
   - OpenSSL Database Format: 'kb/openssl-database-format/README.md'
   - Package-Buddy QR Code: 'kb/packagebuddy-qr-code/README.md'
+  - Yubikey In Containers: 'kb/yubikey-container/README.md'
 - Guides:
   - 'guides/README.md'
   - WSL:

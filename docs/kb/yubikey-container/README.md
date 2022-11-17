@@ -1,8 +1,195 @@
-# Yubikey In Container
+# Yubikey In Containers
 
-`pcscd` needs to be disabled or removed from the host system. It takes exclusive
-control of smard card devices, so they will not be able to be accessed inside of
-containers if active.
+`pcscd` must not be running on the host. The daemon takes exclusive control of
+smart card devices, so they will not be able to be accessed inside containers.
+
+Stopping the systemd `pcscd.socket` is generally all that needs to be done. If
+you use smart cards for other purposes, be sure to re-enable it when you're
+done.
+
+```sh
+sudo systemctl stop pcscd.socket
+```
+
+## SELinux
+
+### Compile Module
+
+```raw title="container_usb_chr.te"
+module container_usb_chr 1.0;
+
+require {
+    type container_t;
+    type usb_device_t;
+    class chr_file { getattr ioctl open read write };
+}
+allow container_t usb_device_t:chr_file { getattr ioctl open read write };
+```
+
+```sh
+checkmodule -M -m -o container_usb_chr.mod container_usb_chr.te
+```
+
+```sh
+semodule_package -o container_usb_chr.pp -m container_usb_chr.mod
+```
+
+```sh
+semodule -i container_usb_chr.pp
+```
+
+### Common Intermediate Language (CIL)
+
+```raw title="container_usb_chr.cil"
+(typeattributeset cil_gen_require container_t)
+(typeattributeset cil_gen_require usb_device_t)
+(allow container_t usb_device_t (chr_file (getattr ioctl open read write)))
+```
+
+```sh
+semodule -i container_usb_chr.cil
+```
+
+#### FCOS Butane
+
+```yaml
+. . .
+storage:
+  files:
+  - path: /etc/policies/container_usb_chr.cil
+    mode: 0644
+    contents:
+      inline: |
+        (typeattributeset cil_gen_require container_t)
+        (typeattributeset cil_gen_require usb_device_t)
+        (allow container_t usb_device_t (chr_file (getattr ioctl open read write)))
+. . .
+systemd:
+  units:
+  - name: yubikey-container-selinux-policy.service
+    enabled: true
+    contents: |
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/sbin/semodule -i /etc/policies/container_usb_chr.cil
+      RemainAfterExit=yes
+      [Install]
+      WantedBy=multi-user.target
+. . .
+```
+
+## PIV
+
+### udev Rule
+
+```raw title="/etc/udev/rules.d/99-yubikey-piv.rules"
+SUBSYSTEM=="usb", \
+    ATTRS{idVendor}=="1050", \
+    ATTRS{idProduct}=="0401|0402|0403|0404|0405|0406|0407", \
+    SYMLINK+="yubikey$attr{serial}", \
+    TAG+="uaccess"
+```
+
+```sh
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+#### FCOS Butane
+
+```yaml
+. . .
+storage:
+  files:
+    - path: /etc/udev/rules.d/99-yubikey-piv.rules
+      mode: 0644
+      contents:
+        inline: |
+          SUBSYSTEM=="usb", \
+            ATTRS{idVendor}=="1050", \
+            ATTRS{idProduct}=="0401|0402|0403|0404|0405|0406|0407", \
+            SYMLINK+="yubikey$attr{serial}", \
+            TAG+="uaccess"
+. . .
+```
+
+## FIDO
+
+### udev Rule
+
+```raw title="/etc/udev/rules.d/99-yubikey-fido.rules"
+SUBSYSTEM=="hidraw", \
+    ATTRS{idVendor}=="1050", \
+    ATTRS{idProduct}=="0401|0402|0403|0404|0405|0406|0407", \
+    SYMLINK+="yubifido$attr{serial}", \
+    TAG+="uaccess"
+```
+
+```sh
+sudo udevadm control --reload-rules && sudo udevadm trigger
+```
+
+#### FCOS Butane
+
+```yaml
+. . .
+storage:
+  files:
+    - path: /etc/udev/rules.d/99-yubikey-fido.rules
+      mode: 0644
+      contents:
+        inline: |
+          SUBSYSTEM=="hidraw", \
+            ATTRS{idVendor}=="1050", \
+            ATTRS{idProduct}=="0401|0402|0403|0404|0405|0406|0407", \
+            SYMLINK+="yubifido$attr{serial}", \
+            TAG+="uaccess"
+. . .
+```
+
+## Yubikey Product Codes
+
+| YubiKey Series                              | USB Interfaces  | `idProduct` | iProduct String        |
+| :-                                          | :-              | :-          | :-                     |
+| YubiKey Gen 1                               | OTP             | `0010`      | N/A                    |
+| YubiKey Gen 2                               | OTP             | `0010`      | N/A                    |
+| YubiKey NEO                                 | OTP             | `0110`      | YubiKey OTP            |
+| YubiKey NEO                                 | FIDO            | `0111`      | YubiKey FIDO           |
+| YubiKey NEO                                 | CCID            | `0112`      | YubiKey CCID           |
+| YubiKey NEO                                 | OTP, FIDO       | `0113`      | YubiKey OTP+FIDO       |
+| YubiKey NEO                                 | OTP, CCID       | `0114`      | YubiKey OTP+CCID       |
+| YubiKey NEO                                 | FIDO, CCID      | `0115`      | YubiKey FIDO+CCID      |
+| YubiKey NEO                                 | OTP, FIDO, CCID | `0116`      | YubiKey OTP+FIDO+CCID  |
+| YubiKey 4                                   | OTP             | `0401`      | YubiKey OTP            |
+| YubiKey 4                                   | FIDO            | `0402`      | YubiKey FIDO           |
+| YubiKey 4                                   | CCID            | `0404`      | YubiKey CCID           |
+| YubiKey 4                                   | OTP, FIDO       | `0403`      | YubiKey OTP+FIDO       |
+| YubiKey 4                                   | OTP, CCID       | `0405`      | YubiKey OTP+CCID       |
+| YubiKey 4                                   | FIDO, CCID      | `0406`      | YubiKey FIDO+CCID      |
+| YubiKey 4                                   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+| YubiKey FIPS (4 Series) <sup>&dagger;</sup> | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+| YubiKey 5                                   | OTP             | `0401`      | YubiKey OTP            |
+| YubiKey 5                                   | FIDO            | `0402`      | YubiKey FIDO           |
+| YubiKey 5                                   | CCID            | `0404`      | YubiKey CCID           |
+| YubiKey 5                                   | OTP, FIDO       | `0403`      | YubiKey OTP+FIDO       |
+| YubiKey 5                                   | OTP, CCID       | `0405`      | YubiKey OTP+CCID       |
+| YubiKey 5                                   | FIDO, CCID      | `0406`      | YubiKey FIDO+CCID      |
+| YubiKey 5                                   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+| YubiKey 5 FIPS Series <sup>&dagger;</sup>   | OTP, FIDO, CCID | `0407`      | YubiKey OTP+FIDO+CCID  |
+| Security Key Series (firmware <5.2.7)       | FIDO            | `0120`      | Security Key by Yubico |
+| Security Key Series (firmware 5.2.7+)       | FIDO            | `0420`      | YubiKey FIDO           |
+| YubiKey Bio Series                          | FIDO            | `0420`      | YubiKey FIDO           |
+
+!!! info ""
+
+    &dagger; The YubiKey FIPS (4 Series) and YubiKey 5 FIPS Series devices, when
+    deployed in a FIPS-approved mode, will have all USB interfaces enabled.
+    Should an exemption be obtained to deploy these devices with some interfaces
+    disabled, the `idProduct` and iProduct values will be identical to the
+    YubiKey 4 / 5 Series.
+
+    Source: [Yubico](https://support.yubico.com/hc/en-us/articles/360016614920-YubiKey-USB-ID-Values){target=_blank rel="nofollow noopener noreferrer"}
+
+---
 
 ## Udev Rule
 
@@ -54,9 +241,8 @@ Enabling or disabling USB interfaces will change the `idProduct`.
 SUBSYSTEMS=="usb", \
     ATTRS{idVendor}=="1050", \
     ATTRS{idProduct}=="0401|0402|0403|0404|0405|0406|0407", \
-    SYMLINK+="yubikey", \
-    OWNER:="core", \
-    GROUP:="core"
+    SYMLINK+="yubikey$attr{serial}", \
+    TAG+="uaccess"
 ```
 
 Check that the proper device is mounted:
@@ -86,7 +272,7 @@ link and shows the end file status.
 
 ```sh
 $ ls -lL /dev/yubikey
-crw-rw----. 1 core core 189, Jan 01 00:00 /dev/yubikey
+crw-rw-r--. 1 root root 189, Jan 01 00:00 /dev/yubikey
 ```
 
 ### FCOS Butane
@@ -102,9 +288,8 @@ storage:
           SUBSYSTEMS=="usb", \
             ATTRS{idVendor}=="1050", \
             ATTRS{idProduct}=="0401|0402|0403|0404|0405|0406|0407", \
-            SYMLINK+="yubikey", \
-            OWNER:="core", \
-            GROUP:="core"
+            SYMLINK+="yubikey$attr{serial}", \
+            TAG+="uaccess"
 . . .
 ```
 
