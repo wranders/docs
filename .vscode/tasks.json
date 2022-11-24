@@ -39,6 +39,7 @@
                 "command": "podman",
                 "args": [
                     "run", "--rm", "-it",
+                    "--security-opt", "label=disable",
                     "-v", "${PWD}:/docs",
                     "-p", "8000:8000",
                     "localhost/docs"
